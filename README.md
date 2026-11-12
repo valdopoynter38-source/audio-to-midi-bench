@@ -20,6 +20,15 @@ We are second. The one note we get wrong is explained to the sample in
 [`METHOD.md`](METHOD.md) and in the video: it is a 23 ms analysis window landing on
 a note boundary, not a tuning problem.
 
+Two videos use these numbers:
+
+- [Why one note came out a semitone low](https://youtu.be/ixl5BgC-FDo) — 1:02, only the 23 ms window
+- [The most accurate audio-to-MIDI tool needs Python. The one you'll use doesn't.](https://youtu.be/6mU-EcX23oM) — 1:52, the three-engine comparison
+
+The benchmark was built by [localmidi.com](https://localmidi.com/) (audio to MIDI in
+the browser, nothing uploaded) because publishing a comparison you can't check is
+worth nothing.
+
 ---
 
 ## 1. Why you can check this
@@ -139,6 +148,8 @@ METHOD.md           the long-form method, including the two caveats above
 `verify.sh` needs `node`; pYIN needs `librosa`; aubio needs `aubionotes`
 (on PATH, or `AUBIO=/path/to/aubionotes`). Missing engines are skipped and
 reported — never silently filled in.
+
+On Windows, run it from Git Bash (it is a POSIX shell script, LF endings, no CRLF).
 
 ## 8. License
 
