@@ -160,9 +160,9 @@ for s in segs:
         merged.append(dict(s))
 notes = [{"pitch": s["pitch"], "start": round(s["start"], 3), "end": round(s["end"], 3)} for s in merged]
 
-json.dump({"tool": "pyin", "notes": notes}, open("out-pyin.json", "w", encoding="utf-8"), indent=1)
+json.dump({"tool": "pyin", "notes": notes}, open("out-pyin.json", "w", encoding="utf-8", newline="\n"), indent=1)
 print("frames", tot, "frame accuracy %.3f" % frame_acc)
 print("notes", len(notes))
 print(" ".join("%d@%.2f-%.2f" % (n["pitch"], n["start"], n["end"]) for n in notes))
 json.dump({"frame_accuracy": round(frame_acc, 4), "frames_scored": tot},
-          open("pyin-frames.json", "w", encoding="utf-8"), indent=1)
+          open("pyin-frames.json", "w", encoding="utf-8", newline="\n"), indent=1)
