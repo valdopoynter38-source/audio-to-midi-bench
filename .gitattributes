@@ -1,0 +1,4 @@
+# Everything textual is LF on every platform: verify.sh must run as-is on Linux/macOS.
+* text=auto eol=lf
+*.wav binary
+*.mid binary
