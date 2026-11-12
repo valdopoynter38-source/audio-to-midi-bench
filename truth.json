@@ -1,0 +1,81 @@
+{
+  "file": "melody.wav",
+  "sample_rate": 44100,
+  "duration": 7.6,
+  "notes": [
+    {
+      "pitch": 60,
+      "start": 0.0,
+      "end": 0.6,
+      "kind": "plain"
+    },
+    {
+      "pitch": 62,
+      "start": 0.6,
+      "end": 1.2,
+      "kind": "plain"
+    },
+    {
+      "pitch": 64,
+      "start": 1.2,
+      "end": 1.8,
+      "kind": "vibrato"
+    },
+    {
+      "pitch": 67,
+      "start": 1.8,
+      "end": 2.4,
+      "kind": "vibrato"
+    },
+    {
+      "pitch": 69,
+      "start": 2.4,
+      "end": 3.0,
+      "kind": "vibrato"
+    },
+    {
+      "pitch": 67,
+      "start": 3.0,
+      "end": 3.6,
+      "kind": "plain"
+    },
+    {
+      "pitch": 64,
+      "start": 3.6,
+      "end": 4.2,
+      "kind": "vibrato"
+    },
+    {
+      "pitch": 62,
+      "start": 4.2,
+      "end": 4.8,
+      "kind": "plain"
+    },
+    {
+      "pitch": 60,
+      "start": 4.8,
+      "end": 6.0,
+      "kind": "vibrato"
+    },
+    {
+      "pitch": 64,
+      "start": 6.0,
+      "end": 6.15,
+      "kind": "short"
+    },
+    {
+      "pitch": 65,
+      "start": 6.15,
+      "end": 6.3,
+      "kind": "short"
+    }
+  ],
+  "glide": {
+    "from": 67,
+    "to": 69,
+    "start": 6.6,
+    "end": 7.2,
+    "note": "two defensible answers, excluded from error count"
+  },
+  "counted_notes": 11
+}

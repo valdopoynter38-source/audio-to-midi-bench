@@ -1,0 +1,71 @@
+{
+  "tool": "localmidi",
+  "sensitivity": 2,
+  "notes": [
+    {
+      "pitch": 60,
+      "start": 0,
+      "end": 0.586
+    },
+    {
+      "pitch": 62,
+      "start": 0.586,
+      "end": 1.19
+    },
+    {
+      "pitch": 64,
+      "start": 1.19,
+      "end": 1.788
+    },
+    {
+      "pitch": 67,
+      "start": 1.788,
+      "end": 2.386
+    },
+    {
+      "pitch": 69,
+      "start": 2.386,
+      "end": 2.99
+    },
+    {
+      "pitch": 67,
+      "start": 2.99,
+      "end": 3.587
+    },
+    {
+      "pitch": 64,
+      "start": 3.587,
+      "end": 4.191
+    },
+    {
+      "pitch": 62,
+      "start": 4.191,
+      "end": 4.789
+    },
+    {
+      "pitch": 60,
+      "start": 4.789,
+      "end": 5.985
+    },
+    {
+      "pitch": 63,
+      "start": 5.985,
+      "end": 6.136
+    },
+    {
+      "pitch": 65,
+      "start": 6.136,
+      "end": 6.298
+    },
+    {
+      "pitch": 67,
+      "start": 6.583,
+      "end": 6.972
+    },
+    {
+      "pitch": 69,
+      "start": 6.972,
+      "end": 7.198
+    }
+  ]
+}

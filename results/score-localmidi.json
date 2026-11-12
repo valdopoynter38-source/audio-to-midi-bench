@@ -1,0 +1,93 @@
+{
+  "total_out": 13,
+  "correct": 10,
+  "wrong": 1,
+  "missing": 0,
+  "spurious": 0,
+  "rows": [
+    {
+      "truth": 60,
+      "at": 0,
+      "got": 60,
+      "verdict": "ok"
+    },
+    {
+      "truth": 62,
+      "at": 0.6,
+      "got": 62,
+      "verdict": "ok"
+    },
+    {
+      "truth": 64,
+      "at": 1.2,
+      "got": 64,
+      "verdict": "ok"
+    },
+    {
+      "truth": 67,
+      "at": 1.8,
+      "got": 67,
+      "verdict": "ok"
+    },
+    {
+      "truth": 69,
+      "at": 2.4,
+      "got": 69,
+      "verdict": "ok"
+    },
+    {
+      "truth": 67,
+      "at": 3,
+      "got": 67,
+      "verdict": "ok"
+    },
+    {
+      "truth": 64,
+      "at": 3.6,
+      "got": 64,
+      "verdict": "ok"
+    },
+    {
+      "truth": 62,
+      "at": 4.2,
+      "got": 62,
+      "verdict": "ok"
+    },
+    {
+      "truth": 60,
+      "at": 4.8,
+      "got": 60,
+      "verdict": "ok"
+    },
+    {
+      "truth": 64,
+      "at": 6,
+      "got": 63,
+      "verdict": "wrong 63 (-1 st)"
+    },
+    {
+      "truth": 65,
+      "at": 6.15,
+      "got": 65,
+      "verdict": "ok"
+    }
+  ],
+  "hist_out": {
+    "<0.2s": 2,
+    "0.2-0.5s": 2,
+    "0.5-1.0s": 8,
+    ">1.0s": 1
+  },
+  "hist_truth": {
+    "<0.2s": 2,
+    "0.2-0.5s": 0,
+    "0.5-1.0s": 8,
+    ">1.0s": 1
+  },
+  "glide_out": [
+    67,
+    69
+  ],
+  "tool": "localmidi",
+  "source": "out-localmidi.mid"
+}
