@@ -1,9 +1,14 @@
 {
-  "total_out": 14,
+  "counted_notes": 11,
   "correct": 11,
   "wrong": 0,
   "missing": 0,
+  "total_out": 14,
+  "used": 11,
   "spurious": 0,
+  "glide_out_count": 3,
+  "dangling": 0,
+  "answered_by_spurious": 0,
   "rows": [
     {
       "truth": 60,

@@ -39,17 +39,41 @@ Three traps, chosen on purpose:
 
 ## 2. Scoring
 
-For each truth note, window `[start + 0.03, end − 0.03]`:
+The ruler measures two different populations and keeps them apart, because mixing
+them is how a table ends up with a column nobody can reconcile.
 
-- the output pitch covering the largest share of that window is the answer
+**Truth side — 11 notes.** For each truth note, window `[start + 0.03, end − 0.03]`:
+
+- the output pitch covering the largest share of that window is the engine's answer
 - coverage < 50% → `missing`
 - pitch differs → `wrong`, with the interval in semitones recorded
-- an output note overlapping any truth note for < 50% of **its own** duration → `spurious`
-- the glide is reported but not scored
 
-`analyze.js` implements exactly this and nothing else. It parses `.mid` directly
-(running status, meta events, sysex skipped) so the page's own export can be
-scored without a converter in between.
+`correct + wrong + missing = 11`, exactly.
+
+**Output side — every note the engine emitted.** One bucket each, tested in order:
+
+| test | bucket |
+|---|---|
+| starts at or after 6.58 s, ends at or before 7.25 s | `glide` — not scored, two defensible answers exist |
+| overlaps all truth notes for < 50% of its own duration | `spurious` |
+| chosen as the answer for ≥ 1 truth note | `used` |
+| otherwise | `dangling` |
+
+`used + spurious + glide + dangling = notes out`, exactly.
+
+`spurious` outranks `used`. aubio's `64@6.060–6.653` is the only candidate for
+both short notes at 6.00 s and 6.15 s, so it answers two truth notes — and 0.35 s
+of its 0.593 s lies outside any truth note, so it is also a blob. Counting it in
+both columns is what made an earlier version of this table fail to add up (6 used
++ 2 spurious = 8, out of 7 notes). It is now counted once, in `spurious`, and the
+two truth notes it answered are recorded separately as `answered_by_spurious`.
+
+`analyze.js` computes both sums and **throws** if either fails, rather than
+writing a score file that doesn't balance. `dangling` being non-zero is treated as
+a defect in the ruler, not as a result.
+
+It parses `.mid` directly (running status, meta events, sysex skipped) so the
+page's own export can be scored without a converter in between.
 
 ## 3. Engines
 
@@ -114,11 +138,32 @@ There is no "you tuned it badly" explanation available for this result.
 
 ## 4. Results
 
-| engine | notes out | correct | wrong | missing | spurious |
+Truth side, `correct + wrong + missing = 11`:
+
+| engine | correct | wrong | missing |
+|---|---|---|---|
+| localmidi | 10/11 | 1 | 0 |
+| pYIN | 11/11 | 0 | 0 |
+| aubio | 6/11 | 5 | 0 |
+
+Output side, `used + spurious + glide + dangling = notes out`:
+
+| engine | notes out | used | spurious | glide | dangling |
 |---|---|---|---|---|---|
-| localmidi | 13 | 10/11 | 1 | 0 | 0 |
-| pYIN | 14 | 11/11 | 0 | 0 | 0 |
-| aubio | 7 | 6/11 | 5 | 0 | 2 |
+| localmidi | 13 | 11 | 0 | 2 | 0 |
+| pYIN | 14 | 11 | 0 | 3 | 0 |
+| aubio | 7 | 5 | 2 | 0 | 0 |
+
+**The aubio row is the one that needs a sentence, because it looks impossible.**
+6 correct + 5 wrong + 0 missing means all 11 truth notes were claimed — but aubio
+only emitted 7 notes. Both numbers are right. Five of aubio's notes are long
+enough to span more than one truth note, so **5 estimated notes claim all 11 truth
+notes**: `60@0.052–1.254` answers the C4 at 0.000 s correctly and the D4 at
+0.586 s wrongly; `69@2.456–3.657` does the same to two notes; `64@3.657–6.060`
+answers three. Six of those eleven claims are right, five are wrong by 1–4
+semitones, and no truth note goes unclaimed. The 7 outputs split as 5 used + 2
+spurious — aubio's two wasted notes are at the end, one of them the 0.593 s blob
+over the two sixteenths.
 
 Note by note:
 

@@ -6,3 +6,5 @@ __pycache__/
 *.pyc
 .DS_Store
 /*.txt
+# unpacked aubio win64 zip, looked up by run-aubio.js and verify.sh
+aubio/

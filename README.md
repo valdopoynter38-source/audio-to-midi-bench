@@ -27,15 +27,46 @@ badly" — there is nothing to tune.
 [`results/aubio-stderr.txt`](results/aubio-stderr.txt) contains one distinct line,
 printed by **72 of 72 runs**. `verify.sh` diffs that file too.
 
+**If you upgrade aubio past 0.4.6 and it stops printing that line, this repository
+will go red and that is the point.** `verify.sh` will report
+`aubio-stderr DIFFERS` with `0/72 runs` — a version that rewires the onset knob has
+fixed the thing this file documents, so the captured 72/72 no longer describes the
+binary on your disk. That is a fix, not a regression. Re-run `run-aubio.js` and
+commit the new stderr; the aubio column in the table will probably change too, and
+it should.
+
 We also swept 6 pitch methods × 4 thresholds × 3 intervals before we found that line.
 All 72 combinations produce the same 7 notes. That sweep is ours; the line is theirs.
 When you have a confession, you don't lead with the inference.
 
-| engine | notes out | correct | wrong | missing | spurious |
+Two sides, and each one balances by itself. A note that is counted on one side is
+counted on the other, so nothing falls between them:
+
+**Truth side — the 11 notes.** `correct + wrong + missing = 11`
+
+| engine | correct | wrong | missing |
+|---|---|---|---|
+| **pYIN** (librosa 1.0.1) | **11/11** | 0 | 0 |
+| **localmidi** (this site) | **10/11** | 1 | 0 |
+| **aubio notes** 0.4.6 | **6/11** | 5 | 0 |
+
+**Output side — where each engine's notes went.** `used + spurious + glide + dangling = notes out`
+
+| engine | notes out | used | spurious | glide window | dangling |
 |---|---|---|---|---|---|
-| **pYIN** (librosa 1.0.1) | 14 | **11/11** | 0 | 0 | 0 |
-| **localmidi** (this site) | 13 | **10/11** | 1 | 0 | 0 |
-| **aubio notes** 0.4.6 | 7 | **6/11** | 5 | 0 | 2 |
+| pYIN | 14 | 11 | 0 | 3 (67/68/69) | 0 |
+| localmidi | 13 | 11 | 0 | 2 (67/69) | 0 |
+| aubio | 7 | 5 | 2 | 0 | 0 |
+
+`used` is an output note the ruler picked as the answer for at least one truth
+note. One output can answer several: **aubio's 5 used notes cover all 11 truth
+notes**, because each of its notes is long enough to span more than one. That is
+how 5 notes produce 6 correct and 5 wrong, and why aubio shows `missing 0` while
+emitting only 7 notes. `glide window` is the 6.60–7.20 s region that is not
+scored. `dangling` is an output with no home; it is 0 for all three, and
+`analyze.js` refuses to write a score file if it ever isn't — the earlier version
+of this table silently lost those notes, which is exactly the kind of hole a
+reader finds before you do.
 
 We are second. The one note we get wrong is explained to the sample in
 [`METHOD.md`](METHOD.md) and in the video: it is a 23 ms analysis window landing on
@@ -73,13 +104,26 @@ Three deliberate traps:
 
 ## 2. The ruler
 
-For each of the 11 truth notes, take the window `[start + 0.03, end − 0.03]`:
+**On the truth side**, for each of the 11 truth notes take the window
+`[start + 0.03, end − 0.03]`:
 
-- the pitch that covers the most of that window is the engine's answer
+- the pitch covering the most of that window is the engine's answer
 - coverage < 50% → `missing`
-- different pitch → `wrong` (the interval is recorded)
-- any output note overlapping a truth note for less than 50% of **its own** duration → `spurious`
-- the glide is excluded from scoring and reported separately
+- different pitch → `wrong`, with the interval in semitones recorded
+
+**On the output side**, every emitted note goes into exactly one bucket, tested in
+this order:
+
+- inside 6.60–7.20 s → `glide window` (not scored)
+- overlaps all truth notes for less than 50% of **its own** duration → `spurious`
+- was picked as the answer for at least one truth note → `used`
+- none of the above → `dangling` (must be 0)
+
+`spurious` outranks `used` on purpose. aubio emits a 0.593 s blob at 6.060 s that
+is the closest thing available for both of the 0.15 s notes at 6.00 s and 6.15 s,
+so it answers two truth notes and is still mostly nothing — it is counted once, in
+`spurious`, and the two notes it answered are recorded in `answered_by_spurious`
+in `results/score-aubio.json`.
 
 One rule, applied identically to all three engines, in `analyze.js`.
 
@@ -165,9 +209,11 @@ results/            the expected outputs, committed
 METHOD.md           the long-form method, including the two caveats above
 ```
 
-`verify.sh` needs `node`; pYIN needs `librosa`; aubio needs `aubionotes`
-(on PATH, or `AUBIO=/path/to/aubionotes`). Missing engines are skipped and
-reported — never silently filled in.
+`verify.sh` needs `node`; pYIN needs `librosa`; aubio needs `aubionotes` (on PATH,
+via `AUBIO=/path/to/aubionotes`, or unpacked at `aubio/aubio-0.4.6-win64/bin/`).
+Missing engines are skipped and reported — never silently filled in. A skipped
+engine is not a pass: the score file for it is not diffed at all, and the final
+line tells you how many were skipped.
 
 On Windows, run it from Git Bash (it is a POSIX shell script, LF endings, no CRLF).
 
