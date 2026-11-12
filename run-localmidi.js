@@ -1,6 +1,7 @@
 // 跑 localmidi 自己的检测器：detectNotes 从 converter.js 原样抄过来，一个字没改。
 // 只把浏览器里的 AudioBuffer 换成从 melody.wav 读出来的 Float32Array。
 const fs = require('fs');
+const path = require('path');
 
 function readWav(path) {
   const b = fs.readFileSync(path);
@@ -77,8 +78,9 @@ const detectNotes = (buffer, sensitivityLevel) => {
 
 const buf = readWav(process.argv[2] || 'melody.wav');
 const sens = Number(process.argv[3] || 2);
+const outDir = process.argv[4] || '.';   // sample B writes into its own dir
 const notes = detectNotes(buf, sens);
 const clean = notes.map(n => ({ pitch: n.pitch, start: +n.start.toFixed(3), end: +n.end.toFixed(3) }));
-fs.writeFileSync(`out-localmidi-s${sens}.json`, JSON.stringify({ tool: 'localmidi', sensitivity: sens, notes: clean }, null, 2));
+fs.writeFileSync(path.join(outDir, `out-localmidi-s${sens}.json`), JSON.stringify({ tool: 'localmidi', sensitivity: sens, notes: clean }, null, 2));
 console.log('notes:', notes.length);
 console.log(clean.map(n => `${n.pitch}@${n.start}-${n.end}`).join(' '));

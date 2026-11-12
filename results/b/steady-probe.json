@@ -1,0 +1,222 @@
+{
+ "question": "Can aubionotes read this signal at all, given the note alone?",
+ "method": "each note's stable body [start+glide_in, end] cut out exactly, 0.25s silence padding at each end, same binary and -p default",
+ "min_body_s": 0.3,
+ "notes_tested": 26,
+ "notes_skipped": 4,
+ "isolated_correct": 26,
+ "isolated_wrong": 0,
+ "rows": [
+  {
+   "index": 1,
+   "truth": 64,
+   "body_s": 1.4,
+   "isolated": 64,
+   "correct": true
+  },
+  {
+   "index": 2,
+   "truth": 69,
+   "body_s": 1.42,
+   "isolated": 69,
+   "correct": true
+  },
+  {
+   "index": 3,
+   "truth": 67,
+   "body_s": 0.7,
+   "isolated": 67,
+   "correct": true
+  },
+  {
+   "index": 4,
+   "truth": 65,
+   "body_s": 0.7,
+   "isolated": 65,
+   "correct": true
+  },
+  {
+   "index": 5,
+   "truth": 64,
+   "body_s": 1.06,
+   "isolated": 64,
+   "correct": true
+  },
+  {
+   "index": 6,
+   "truth": 72,
+   "body_s": 1.49,
+   "isolated": 72,
+   "correct": true
+  },
+  {
+   "index": 7,
+   "truth": 71,
+   "body_s": 0.61,
+   "isolated": 71,
+   "correct": true
+  },
+  {
+   "index": 8,
+   "truth": 69,
+   "body_s": 2.05,
+   "isolated": 69,
+   "correct": true
+  },
+  {
+   "index": 9,
+   "truth": 64,
+   "body_s": 0.55,
+   "isolated": 64,
+   "correct": true
+  },
+  {
+   "index": 10,
+   "truth": 64,
+   "body_s": 0.55,
+   "isolated": 64,
+   "correct": true
+  },
+  {
+   "index": 11,
+   "truth": 65,
+   "body_s": 0.56,
+   "isolated": 65,
+   "correct": true
+  },
+  {
+   "index": 12,
+   "truth": 67,
+   "body_s": 0.55,
+   "isolated": 67,
+   "correct": true
+  },
+  {
+   "index": 13,
+   "truth": 69,
+   "body_s": 1.25,
+   "isolated": 69,
+   "correct": true
+  },
+  {
+   "index": 14,
+   "truth": 67,
+   "body_s": 0.13,
+   "isolated": null,
+   "skipped": "body 0.13s < 0.3s"
+  },
+  {
+   "index": 15,
+   "truth": 65,
+   "body_s": 0.13,
+   "isolated": null,
+   "skipped": "body 0.13s < 0.3s"
+  },
+  {
+   "index": 16,
+   "truth": 64,
+   "body_s": 0.14,
+   "isolated": null,
+   "skipped": "body 0.14s < 0.3s"
+  },
+  {
+   "index": 17,
+   "truth": 62,
+   "body_s": 0.15,
+   "isolated": null,
+   "skipped": "body 0.15s < 0.3s"
+  },
+  {
+   "index": 18,
+   "truth": 60,
+   "body_s": 0.85,
+   "isolated": 60,
+   "correct": true
+  },
+  {
+   "index": 19,
+   "truth": 64,
+   "body_s": 0.4,
+   "isolated": 64,
+   "correct": true
+  },
+  {
+   "index": 20,
+   "truth": 69,
+   "body_s": 0.57,
+   "isolated": 69,
+   "correct": true
+  },
+  {
+   "index": 21,
+   "truth": 81,
+   "body_s": 0.96,
+   "isolated": 81,
+   "correct": true
+  },
+  {
+   "index": 22,
+   "truth": 79,
+   "body_s": 0.65,
+   "isolated": 79,
+   "correct": true
+  },
+  {
+   "index": 23,
+   "truth": 76,
+   "body_s": 0.69,
+   "isolated": 76,
+   "correct": true
+  },
+  {
+   "index": 24,
+   "truth": 72,
+   "body_s": 1.38,
+   "isolated": 72,
+   "correct": true
+  },
+  {
+   "index": 25,
+   "truth": 77,
+   "body_s": 0.52,
+   "isolated": 77,
+   "correct": true
+  },
+  {
+   "index": 26,
+   "truth": 76,
+   "body_s": 0.56,
+   "isolated": 76,
+   "correct": true
+  },
+  {
+   "index": 27,
+   "truth": 74,
+   "body_s": 0.55,
+   "isolated": 74,
+   "correct": true
+  },
+  {
+   "index": 28,
+   "truth": 72,
+   "body_s": 1.45,
+   "isolated": 72,
+   "correct": true
+  },
+  {
+   "index": 29,
+   "truth": 71,
+   "body_s": 0.51,
+   "isolated": 71,
+   "correct": true
+  },
+  {
+   "index": 30,
+   "truth": 69,
+   "body_s": 3.15,
+   "isolated": 69,
+   "correct": true
+  }
+ ],
+ "note": "aubionotes reports the pitch of a note's first frame. Isolated, that frame is inside the stable body. In the full file the onset fires on the join, so the first frame is the transition. Compare with score-aubio.json."
+}

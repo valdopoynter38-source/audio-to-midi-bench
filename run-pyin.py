@@ -6,7 +6,8 @@ as one fixed rule so anyone can reproduce it:
   round to nearest semitone -> merge adjacent equal values -> drop <50 ms
   fragments -> merge <60 ms gaps *only when the pitch is the same*.
 
-Two environment notes, both deliberate:
+Two environment notes, both deliberate, both implemented in `librosa_shim.py`
+because `check-synth.py` needs the same treatment:
 
 1. librosa's abs2 / localmax / localmin are replaced with plain numpy versions
    *unconditionally*. They are mathematically the same operation; the numba
@@ -16,88 +17,24 @@ Two environment notes, both deliberate:
 
 2. If numba or soxr cannot be imported (broken DLLs on some Python 3.13
    builds), a pass-through stub is installed so librosa still imports. The
-   stub is never called: this file is 44.1 kHz and is not resampled, and every
-   numba-decorated helper we actually reach has already been replaced above.
+   stub is never called: this file is 44.1 kHz and is not resampled.
 
 Usage:  python run-pyin.py [melody.wav] [truth.json]
 Writes: out-pyin.json, pyin-frames.json
 """
 import json
+import os
 import sys
-import types
 
 import numpy as np
 
+from librosa_shim import import_librosa
 
-def _install_import_stubs():
-    """Only runs when the real module is missing/broken."""
-    if "soxr" not in sys.modules:
-        try:
-            import soxr  # noqa: F401
-        except Exception:
-            _s = types.ModuleType("soxr")
-            _s.resample = lambda x, in_rate, out_rate, **kw: x
-            _s.__version__ = "0.0.0-stub"
-            sys.modules["soxr"] = _s
-
-    try:
-        import numba  # noqa: F401
-    except Exception:
-        def _jit(*a, **k):
-            if a and callable(a[0]) and not k:
-                return a[0]
-            return lambda f: f
-        _nb = types.ModuleType("numba")
-        for name in ("jit", "njit", "stencil", "guvectorize", "vectorize"):
-            setattr(_nb, name, _jit)
-        _nb.uint32 = np.uint32
-        _nb.__version__ = "0.0.0-stub"
-        _nb.__file__ = None
-        sys.modules["numba"] = _nb
-
-
-_install_import_stubs()
-import librosa  # noqa: E402
-
-
-def _abs2(x, dtype=None):
-    a = np.asarray(x)
-    out = (a.real ** 2 + a.imag ** 2) if np.iscomplexobj(a) else a ** 2
-    return out if dtype is None else np.asarray(out, dtype=dtype)
-
-
-def _localmax_np(x, *, axis=0):
-    x = np.asarray(x)
-    n = x.shape[axis]
-    pad = [(1, 1) if i == axis else (0, 0) for i in range(x.ndim)]
-    xp = np.pad(x, pad, mode="edge")
-    prev = np.take(xp, np.arange(0, n), axis=axis)
-    nxt = np.take(xp, np.arange(2, n + 2), axis=axis)
-    return (x > prev) & (x >= nxt)
-
-
-def _localmin_np(x, *, axis=0):
-    x = np.asarray(x)
-    n = x.shape[axis]
-    pad = [(1, 1) if i == axis else (0, 0) for i in range(x.ndim)]
-    xp = np.pad(x, pad, mode="edge")
-    prev = np.take(xp, np.arange(0, n), axis=axis)
-    nxt = np.take(xp, np.arange(2, n + 2), axis=axis)
-    return (x < prev) & (x <= nxt)
-
-
-import librosa.util.utils as _luu  # noqa: E402
-
-_luu.abs2 = _abs2
-_luu.localmax = _localmax_np
-_luu.localmin = _localmin_np
-for _mod in (librosa.util, librosa):
-    for _name, _fn in (("abs2", _abs2), ("localmax", _localmax_np), ("localmin", _localmin_np)):
-        if hasattr(_mod, _name):
-            setattr(_mod, _name, _fn)
+librosa = import_librosa()
 
 WAV = sys.argv[1] if len(sys.argv) > 1 else "melody.wav"
 TRUTH = sys.argv[2] if len(sys.argv) > 2 else "truth.json"
+OUT_DIR = sys.argv[3] if len(sys.argv) > 3 else "."   # sample B writes into its own dir
 
 SR = 44100
 FRAME, HOP = 2048, 512
@@ -160,9 +97,9 @@ for s in segs:
         merged.append(dict(s))
 notes = [{"pitch": s["pitch"], "start": round(s["start"], 3), "end": round(s["end"], 3)} for s in merged]
 
-json.dump({"tool": "pyin", "notes": notes}, open("out-pyin.json", "w", encoding="utf-8", newline="\n"), indent=1)
+json.dump({"tool": "pyin", "notes": notes}, open(os.path.join(OUT_DIR, "out-pyin.json"), "w", encoding="utf-8", newline="\n"), indent=1)
 print("frames", tot, "frame accuracy %.3f" % frame_acc)
 print("notes", len(notes))
 print(" ".join("%d@%.2f-%.2f" % (n["pitch"], n["start"], n["end"]) for n in notes))
 json.dump({"frame_accuracy": round(frame_acc, 4), "frames_scored": tot},
-          open("pyin-frames.json", "w", encoding="utf-8", newline="\n"), indent=1)
+          open(os.path.join(OUT_DIR, "pyin-frames.json"), "w", encoding="utf-8", newline="\n"), indent=1)

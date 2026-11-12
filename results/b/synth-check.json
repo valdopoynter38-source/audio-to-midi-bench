@@ -1,0 +1,13 @@
+{
+  "checked_against": "truth2.json f0_cents",
+  "estimator": "librosa.pyin frame_length=2048 hop_length=512",
+  "grid_points": 2716,
+  "midi_match_rate": 0.9801,
+  "body_points": 2228,
+  "body_median_abs_cents": 0.0,
+  "body_p95_abs_cents": 7.2,
+  "body_max_abs_cents": 14.0,
+  "join_points": 153,
+  "join_median_signed_cents": -6.9,
+  "join_note": "pitch is moving here by design; a large value is the sample working, not failing"
+}

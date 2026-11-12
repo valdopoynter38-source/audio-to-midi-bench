@@ -62,46 +62,70 @@ function parseMidi(path) {
 }
 
 function score(truth, notes) {
-  const GL = truth.glide;
-  const inGlide = n => n.start >= GL.start - 0.02 && n.end <= GL.end + 0.05;
+  // Sample A carries a `glide` region (one note that is not scored). Sample B
+  // carries `glide_in` per note instead and has no separate region. A truth file
+  // is allowed to have neither.
+  const GL = truth.glide || null;
+  const inGlide = GL
+    ? (n => n.start >= GL.start - 0.02 && n.end <= GL.end + 0.05)
+    : () => false;
+  const hasJoin = truth.notes.some(t => typeof t.glide_in === "number" && t.glide_in > 0);
   const overlap = n => truth.notes.reduce((s, t) => s + Math.max(0, Math.min(t.end, n.end) - Math.max(t.start, n.start)), 0);
 
   // --- 输出侧先分桶，每个输出只进一个 ---
   const isGlide = notes.map(inGlide);
   const isSpurious = notes.map((n, i) => !isGlide[i] && overlap(n) < (n.end - n.start) * 0.5);
 
-  // --- 真值侧 ---
-  const rows = [];
-  let wrong = 0, missing = 0, answeredBySpurious = 0;
-  const usedIdx = new Set();
-  for (const t of truth.notes) {
-    const w0 = t.start + 0.03, w1 = t.end - 0.03;
-    const span = w1 - w0;
-    const cover = new Map();   // pitch -> { c: 覆盖总时长, src: 贡献最多的那个输出下标 }
-    notes.forEach((n, i) => {
-      if (isGlide[i]) return;
-      const o = Math.min(w1, n.end) - Math.max(w0, n.start);
-      if (o <= 0) return;
-      const cur = cover.get(n.pitch) || { c: 0, src: -1, best: 0 };
-      cur.c += o;
-      if (o > cur.best) { cur.best = o; cur.src = i; }
-      cover.set(n.pitch, cur);
-    });
-    let best = null, bestC = 0;
-    for (const [, v] of cover) if (v.c > bestC) { bestC = v.c; best = v; }
-    let verdict;
-    if (!best || bestC / span < 0.5) { verdict = 'missing'; missing++; }
-    else {
+  // --- 一把尺子，可以套在两个窗口上 ---
+  // trimHead(t) / trimTail(t) 决定这条真值音的打分窗口。严格窗两边各让 30 ms
+  // （样本 A 的口径，两个样本可比）；核心窗让掉 glide_in，只量音高稳定的那一段。
+  function evaluate(trimHead, trimTail, collectOutputSide) {
+    const rows = [];
+    const srcs = [];          // 每条真值音是被哪个输出答的（-1 = 没人答）
+    let wrong = 0, missing = 0, byS = 0;
+    const usedLocal = new Set();
+    for (const t of truth.notes) {
+      let w0 = t.start + trimHead(t);
+      let w1 = t.end - trimTail(t);
+      if (w1 - w0 < 0.02) { w0 = t.start; w1 = t.end; }   // 窗口被削没了就退回整条音
+      const span = w1 - w0;
+      const cover = new Map();   // pitch -> { c: 覆盖总时长, src: 贡献最多的那个输出下标 }
+      notes.forEach((n, i) => {
+        if (isGlide[i]) return;
+        const o = Math.min(w1, n.end) - Math.max(w0, n.start);
+        if (o <= 0) return;
+        const cur = cover.get(n.pitch) || { c: 0, src: -1, best: 0 };
+        cur.c += o;
+        if (o > cur.best) { cur.best = o; cur.src = i; }
+        cover.set(n.pitch, cur);
+      });
+      let best = null, bestC = 0;
+      for (const [, v] of cover) if (v.c > bestC) { bestC = v.c; best = v; }
+      if (!best || bestC / span < 0.5) {
+        missing++;
+        srcs.push(-1);
+        rows.push({ truth: t.pitch, at: t.start, got: null, verdict: 'missing' });
+        continue;
+      }
       const pitch = [...cover.entries()].find(([, v]) => v === best)[0];
-      if (isSpurious[best.src]) answeredBySpurious++;
-      else usedIdx.add(best.src);
+      if (collectOutputSide) {
+        if (isSpurious[best.src]) byS++;
+        else usedLocal.add(best.src);
+      }
+      let verdict;
       if (pitch !== t.pitch) { verdict = `wrong ${pitch} (${pitch - t.pitch > 0 ? '+' : ''}${pitch - t.pitch} st)`; wrong++; }
       else verdict = 'ok';
+      srcs.push(best.src);
       rows.push({ truth: t.pitch, at: t.start, got: pitch, verdict });
-      continue;
     }
-    rows.push({ truth: t.pitch, at: t.start, got: null, verdict });
+    return { rows, wrong, missing, byS, usedLocal, srcs };
   }
+
+  const strict = evaluate(() => 0.03, () => 0.03, true);
+  const rows = strict.rows;
+  const wrong = strict.wrong, missing = strict.missing;
+  const answeredBySpurious = strict.byS;
+  const usedIdx = strict.usedLocal;
 
   // --- 分桶求和 + 对账 ---
   const used = usedIdx.size;
@@ -124,7 +148,7 @@ function score(truth, notes) {
     }
     return h;
   };
-  return {
+  const out = {
     counted_notes: truthTotal,
     correct: truthTotal - wrong - missing,
     wrong, missing,                                  // 真值侧：三者之和 = counted_notes
@@ -134,20 +158,82 @@ function score(truth, notes) {
     rows, hist_out: hist(notes), hist_truth: hist(truth.notes),
     glide_out: notes.filter(inGlide).map(n => n.pitch),
   };
+
+  // --- 只有带连奏的样本才量接缝 ---
+  // 每个引擎对每条真值音只给一个音高，所以「把接缝排除掉再判一次」在结构上
+  // 几乎恒等于原来的判词，那条轴动不了，不做。真正会动的是两件事：它把这个音
+  // 的起点报晚了多少，以及它拿几条输出顶了几条真值音。
+  if (hasJoin) {
+    const pairs = strict.srcs.map((s, i) => [s, i]).filter(([s]) => s >= 0);
+    const onsets = pairs.map(([s, i]) => (notes[s].start - truth.notes[i].start) * 1000);
+    const abs = onsets.map(Math.abs).sort((a, b) => a - b);
+    const distinct = new Set(pairs.map(([s]) => s)).size;
+    const med = a => {
+      if (!a.length) return null;
+      const b = [...a].sort((x, y) => x - y);
+      return Math.round(b[Math.floor(b.length / 2)] * 10) / 10;
+    };
+    out.join = {
+      notes_with_an_answer: pairs.length,
+      distinct_outputs_answering: distinct,
+      notes_sharing_an_output: pairs.length - distinct,
+      onset_median_ms: med(onsets),
+      onset_p95_abs_ms: abs.length ? Math.round(abs[Math.min(abs.length - 1, Math.floor(abs.length * 0.95))] * 10) / 10 : null,
+      note: "onset = output.start - truth.start; positive means the note is reported late. "
+          + "notes_sharing_an_output counts truth notes that had to share one output with another.",
+    };
+
+    // 这个引擎报的音高，是不是取「它自己报的起点」往前某个固定时刻的那一点？
+    // 扫描 -200..+80 ms（10 ms 步长），取平均绝对误差最小的偏移。这是对误差的
+    // 描述，不是对误差的辩护：扫描范围和步长都写死在下面，不随结果调整。
+    if (Array.isArray(truth.f0_cents)) {
+      const g = truth.f0_grid || 0.01;
+      const c = truth.f0_cents;
+      const f0at = t => {
+        const i = Math.round(t / g) - 1;
+        return (i >= 0 && i < c.length) ? 69 + c[i] / 100 : null;
+      };
+      const outs = [...new Set(pairs.map(([s]) => s))].map(s => notes[s]).filter(o => typeof o.pitch === 'number');
+      let best = null;
+      for (let off = -0.20; off <= 0.0801; off += 0.01) {
+        let n = 0, hit = 0, err = 0;
+        for (const o of outs) {
+          const v = f0at(o.start + off);
+          if (v === null) continue;
+          n++;
+          if (Math.round(v) === o.pitch) hit++;
+          err += Math.abs(v - o.pitch);
+        }
+        if (!n) continue;
+        const cand = { off, hit, n, err: err / n };
+        if (!best || cand.err < best.err - 1e-9) best = cand;
+      }
+      if (best) {
+        out.join.pitch_offset_ms = Math.round(best.off * 1000);
+        out.join.pitch_offset_match = `${best.hit}/${best.n}`;
+        out.join.pitch_offset_note = "best single offset such that the truth pitch curve at "
+          + "(output.start + offset) reproduces the pitch this engine reported; "
+          + "scanned -200..+80 ms in 10 ms steps";
+      }
+    }
+  }
+  return out;
 }
 
-const truth = JSON.parse(fs.readFileSync('truth.json', 'utf8'));
+const truth = JSON.parse(fs.readFileSync(process.argv[4] || 'truth.json', 'utf8'));
 const tool = process.argv[2];
 const file = process.argv[3];
 const notes = file.endsWith('.mid') ? parseMidi(file) : JSON.parse(fs.readFileSync(file, 'utf8')).notes;
 const r = score(truth, notes);
 r.tool = tool;
 r.source = file;
-fs.writeFileSync(`score-${tool}.json`, JSON.stringify(r, null, 2));
+const outDir = process.argv[5] || '.';   // sample B writes into its own dir
+fs.writeFileSync(require('path').join(outDir, `score-${tool}.json`), JSON.stringify(r, null, 2));
 console.log(`\n== ${tool} (${file}) ==`);
 console.log(`truth     ${r.counted_notes} notes -> correct ${r.correct} | wrong ${r.wrong} | missing ${r.missing}   (${r.correct}+${r.wrong}+${r.missing} = ${r.counted_notes})`);
 console.log(`outputs   ${r.total_out} notes -> used ${r.used} | spurious ${r.spurious} | glide ${r.glide_out_count} | dangling ${r.dangling}   (${r.used}+${r.spurious}+${r.glide_out_count}+${r.dangling} = ${r.total_out})`);
 if (r.answered_by_spurious) console.log(`          ${r.answered_by_spurious} truth note(s) answered by an output also counted spurious`);
+if (r.join) console.log(`joins     onset ${r.join.onset_median_ms>=0?'+':''}${r.join.onset_median_ms} ms median | ${r.join.distinct_outputs_answering} outputs answer ${r.join.notes_with_an_answer} notes (${r.join.notes_sharing_an_output} note(s) share an output)`);
 for (const row of r.rows) console.log(`  truth ${row.truth} @${row.at}s -> ${row.got === null ? 'none' : row.got}  ${row.verdict}`);
 console.log('  glide:', r.glide_out.join(','));
 console.log('  dur out  ', JSON.stringify(r.hist_out));

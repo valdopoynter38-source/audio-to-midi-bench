@@ -24,6 +24,7 @@ function findExe() {
 }
 const EXE = findExe();
 const WAV = process.argv[2] || 'melody.wav';
+const OUT_DIR = process.argv[3] || '.';   // sample B writes into its own dir
 console.error('using', EXE);
 
 const methods = ['default', 'yinfft', 'yin', 'mcomb', 'fcomb', 'schmitt'];
@@ -64,20 +65,20 @@ for (const m of methods) {
   }
 }
 
-fs.writeFileSync('aubio-sweep.tsv', rows.join('\n'));
-fs.writeFileSync('aubio-all.json', JSON.stringify(results, null, 1));
+fs.writeFileSync(path.join(OUT_DIR, 'aubio-sweep.tsv'), rows.join('\n'));
+fs.writeFileSync(path.join(OUT_DIR, 'aubio-all.json'), JSON.stringify(results, null, 1));
 
 // Deduplicated, with a count so it is obvious it repeats on every run.
 const stderrOut = [...stderrLines.entries()]
   .sort((a, b) => b[1] - a[1])
   .map(([line, n]) => `${line}   [${n}/${rows.length} runs]`)
   .join('\n');
-fs.writeFileSync('aubio-stderr.txt', stderrOut + (stderrOut ? '\n' : ''));
+fs.writeFileSync(path.join(OUT_DIR, 'aubio-stderr.txt'), stderrOut + (stderrOut ? '\n' : ''));
 
 // The table uses the default-parameter run; all 72 agree, so any would do.
 const PICK = 'default|0.2|0.03';
 const picked = results[PICK] || results[Object.keys(results)[0]];
-fs.writeFileSync('out-aubio.json', JSON.stringify({ tool: 'aubio', notes: picked }, null, 1));
+fs.writeFileSync(path.join(OUT_DIR, 'out-aubio.json'), JSON.stringify({ tool: 'aubio', notes: picked }, null, 1));
 
 const distinct = new Set(Object.values(results).map(n => n.map(x => `${x.pitch}@${x.start}`).join(',')));
 console.log('combos:', rows.length);

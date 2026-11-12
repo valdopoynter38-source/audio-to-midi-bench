@@ -1,0 +1,220 @@
+{
+  "counted_notes": 30,
+  "correct": 30,
+  "wrong": 0,
+  "missing": 0,
+  "total_out": 29,
+  "used": 29,
+  "spurious": 0,
+  "glide_out_count": 0,
+  "dangling": 0,
+  "answered_by_spurious": 0,
+  "rows": [
+    {
+      "truth": 64,
+      "at": 0,
+      "got": 64,
+      "verdict": "ok"
+    },
+    {
+      "truth": 69,
+      "at": 1.4,
+      "got": 69,
+      "verdict": "ok"
+    },
+    {
+      "truth": 67,
+      "at": 2.9,
+      "got": 67,
+      "verdict": "ok"
+    },
+    {
+      "truth": 65,
+      "at": 3.65,
+      "got": 65,
+      "verdict": "ok"
+    },
+    {
+      "truth": 64,
+      "at": 4.4,
+      "got": 64,
+      "verdict": "ok"
+    },
+    {
+      "truth": 72,
+      "at": 5.5,
+      "got": 72,
+      "verdict": "ok"
+    },
+    {
+      "truth": 71,
+      "at": 7.1,
+      "got": 71,
+      "verdict": "ok"
+    },
+    {
+      "truth": 69,
+      "at": 7.75,
+      "got": 69,
+      "verdict": "ok"
+    },
+    {
+      "truth": 64,
+      "at": 9.85,
+      "got": 64,
+      "verdict": "ok"
+    },
+    {
+      "truth": 64,
+      "at": 10.4,
+      "got": 64,
+      "verdict": "ok"
+    },
+    {
+      "truth": 65,
+      "at": 10.95,
+      "got": 65,
+      "verdict": "ok"
+    },
+    {
+      "truth": 67,
+      "at": 11.55,
+      "got": 67,
+      "verdict": "ok"
+    },
+    {
+      "truth": 69,
+      "at": 12.15,
+      "got": 69,
+      "verdict": "ok"
+    },
+    {
+      "truth": 67,
+      "at": 13.45,
+      "got": 67,
+      "verdict": "ok"
+    },
+    {
+      "truth": 65,
+      "at": 13.63,
+      "got": 65,
+      "verdict": "ok"
+    },
+    {
+      "truth": 64,
+      "at": 13.81,
+      "got": 64,
+      "verdict": "ok"
+    },
+    {
+      "truth": 62,
+      "at": 13.99,
+      "got": 62,
+      "verdict": "ok"
+    },
+    {
+      "truth": 60,
+      "at": 14.19,
+      "got": 60,
+      "verdict": "ok"
+    },
+    {
+      "truth": 64,
+      "at": 15.09,
+      "got": 64,
+      "verdict": "ok"
+    },
+    {
+      "truth": 69,
+      "at": 15.49,
+      "got": 69,
+      "verdict": "ok"
+    },
+    {
+      "truth": 81,
+      "at": 16.14,
+      "got": 81,
+      "verdict": "ok"
+    },
+    {
+      "truth": 79,
+      "at": 17.24,
+      "got": 79,
+      "verdict": "ok"
+    },
+    {
+      "truth": 76,
+      "at": 17.94,
+      "got": 76,
+      "verdict": "ok"
+    },
+    {
+      "truth": 72,
+      "at": 18.69,
+      "got": 72,
+      "verdict": "ok"
+    },
+    {
+      "truth": 77,
+      "at": 20.14,
+      "got": 77,
+      "verdict": "ok"
+    },
+    {
+      "truth": 76,
+      "at": 20.74,
+      "got": 76,
+      "verdict": "ok"
+    },
+    {
+      "truth": 74,
+      "at": 21.34,
+      "got": 74,
+      "verdict": "ok"
+    },
+    {
+      "truth": 72,
+      "at": 21.94,
+      "got": 72,
+      "verdict": "ok"
+    },
+    {
+      "truth": 71,
+      "at": 23.44,
+      "got": 71,
+      "verdict": "ok"
+    },
+    {
+      "truth": 69,
+      "at": 23.99,
+      "got": 69,
+      "verdict": "ok"
+    }
+  ],
+  "hist_out": {
+    "<0.2s": 4,
+    "0.2-0.5s": 1,
+    "0.5-1.0s": 14,
+    ">1.0s": 10
+  },
+  "hist_truth": {
+    "<0.2s": 4,
+    "0.2-0.5s": 1,
+    "0.5-1.0s": 15,
+    ">1.0s": 10
+  },
+  "glide_out": [],
+  "join": {
+    "notes_with_an_answer": 30,
+    "distinct_outputs_answering": 29,
+    "notes_sharing_an_output": 1,
+    "onset_median_ms": 48,
+    "onset_p95_abs_ms": 149,
+    "note": "onset = output.start - truth.start; positive means the note is reported late. notes_sharing_an_output counts truth notes that had to share one output with another.",
+    "pitch_offset_ms": 30,
+    "pitch_offset_match": "29/29",
+    "pitch_offset_note": "best single offset such that the truth pitch curve at (output.start + offset) reproduces the pitch this engine reported; scanned -200..+80 ms in 10 ms steps"
+  },
+  "tool": "pyin",
+  "source": "build-b/out-pyin.json"
+}

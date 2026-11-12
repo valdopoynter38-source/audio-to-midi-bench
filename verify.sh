@@ -49,7 +49,7 @@ cmp_file "score-mid" score-localmidi.json results/score-localmidi.json
 
 echo
 echo "== pYIN =="
-if python -c "import librosa" >/dev/null 2>&1; then
+if python -c "from librosa_shim import import_librosa; import_librosa()" >/dev/null 2>&1; then
   python run-pyin.py melody.wav truth.json | sed 's/^/  /'
   node analyze.js pyin out-pyin.json | sed 's/^/  /'
   cmp_file "pyin" out-pyin.json results/out-pyin.json
@@ -70,6 +70,42 @@ if command -v aubionotes >/dev/null 2>&1 || [ -n "${AUBIO:-}" ] || [ -x aubio/au
   cmp_file "score-aubio" score-aubio.json results/score-aubio.json
 else
   say "aubio" "skipped — aubionotes not on PATH and AUBIO is unset"
+  skipped=$((skipped+1))
+fi
+
+echo
+echo "== sample B: 27.89 s performed, 30 notes, legato + vibrato =="
+mkdir -p build-b
+node run-localmidi.js melody2.wav 2 build-b | sed 's/^/  /'
+node analyze.js localmidi build-b/out-localmidi-s2.json truth2.json build-b | sed 's/^/  /'
+cmp_file "b-localmidi" build-b/out-localmidi-s2.json results/b/out-localmidi-s2.json
+cmp_file "b-score-loc" build-b/score-localmidi.json results/b/score-localmidi.json
+
+if python -c "from librosa_shim import import_librosa; import_librosa()" >/dev/null 2>&1; then
+  python run-pyin.py melody2.wav truth2.json build-b | sed 's/^/  /'
+  node analyze.js pyin build-b/out-pyin.json truth2.json build-b | sed 's/^/  /'
+  cmp_file "b-pyin" build-b/out-pyin.json results/b/out-pyin.json
+  cmp_file "b-score-pyin" build-b/score-pyin.json results/b/score-pyin.json
+  # does the file on disk actually contain the pitch curve truth2.json claims?
+  python check-synth.py build-b | sed 's/^/  /'
+  cmp_file "b-synth-check" build-b/synth-check.json results/b/synth-check.json
+else
+  say "b-pYIN" "skipped — librosa not importable through librosa_shim"
+  skipped=$((skipped+1))
+fi
+
+if command -v aubionotes >/dev/null 2>&1 || [ -n "${AUBIO:-}" ] || [ -x aubio/aubio-0.4.6-win64/bin/aubionotes.exe ]; then
+  node run-aubio.js melody2.wav build-b 2>/dev/null | sed 's/^/  /'
+  node analyze.js aubio build-b/out-aubio.json truth2.json build-b | sed 's/^/  /'
+  cmp_file "b-aubio-stder" build-b/aubio-stderr.txt results/b/aubio-stderr.txt
+  cmp_file "b-aubio-sweep" build-b/aubio-sweep.tsv results/b/aubio-sweep.tsv
+  cmp_file "b-aubio-out" build-b/out-aubio.json results/b/out-aubio.json
+  cmp_file "b-score-aubio" build-b/score-aubio.json results/b/score-aubio.json
+  # control: can aubio read this timbre at all, when the neighbours are gone?
+  node probe-steady.js melody2.wav truth2.json build-b | sed 's/^/  /'
+  cmp_file "b-steady-probe" build-b/steady-probe.json results/b/steady-probe.json
+else
+  say "b-aubio" "skipped — aubionotes not found"
   skipped=$((skipped+1))
 fi
 
