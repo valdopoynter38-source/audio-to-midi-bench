@@ -10,6 +10,23 @@ reproduced by one command:
 
 If your run prints `0 differing`, you have the same table we published.
 
+## aubio says it about itself
+
+`aubionotes` 0.4.6 prints this on stderr, every single run, with no flags added:
+
+```
+warning: onset threshold not supported yet
+```
+
+That is not our conclusion about aubio. That is aubio, on its own output stream,
+telling you the knob is disconnected. It is the strongest piece of evidence in this
+repository, and it is why aubio's 6/11 below cannot be answered with "you tuned it
+badly" — there is nothing to tune.
+
+We also swept 6 pitch methods × 4 thresholds × 3 intervals before we found that line.
+All 72 combinations produce the same 7 notes. That sweep is ours; the line is theirs.
+When you have a confession, you don't lead with the inference.
+
 | engine | notes out | correct | wrong | missing | spurious |
 |---|---|---|---|---|---|
 | **pYIN** (librosa 1.0.1) | 14 | **11/11** | 0 | 0 | 0 |
@@ -77,29 +94,27 @@ Two things we have to state plainly:
    under 50 ms → merge gaps under 60 ms *when the pitch is the same*. Part of
    pYIN's score is our segmenter's work. The rule is fixed in `run-pyin.py`; it is
    not tuned against the answer key.
-2. **`aubionotes` 0.4.6 ignores its parameters.** See below — this turned out to be
-   the most useful result in the whole exercise.
+2. **`aubionotes` 0.4.6 ignores its parameters — and says so.** The line it prints
+   is quoted at the top of this file; the 72-run sweep that agrees with it is in §4.
 
-## 4. The 72 combinations
+## 4. The 72 combinations — and why they are the supporting evidence
 
-`run-aubio.js` sweeps 6 pitch methods × 4 onset thresholds × 3 minimum inter-onset
-intervals = **72 runs**. All 72 produce the identical 7 notes
-(`60,64,67,69,64,64,67`). `run-aubio.js` prints:
+The confession is at the top of this file; the number is here. `run-aubio.js`
+sweeps 6 pitch methods × 4 onset thresholds × 3 minimum inter-onset intervals =
+**72 runs**, and all 72 produce the identical 7 notes (`60,64,67,69,64,64,67`):
 
 ```
 combos: 72
 distinct outputs across all combos: 1
 ```
 
-aubio says why itself, on stderr, once per run:
+That sweep is an inference: 72 samples, all equal, therefore the parameters do
+nothing. aubio's own stderr line is a statement. The two agree, so the sweep
+costs nothing to include — but if you only read one of them, read the one aubio
+wrote about itself.
 
-```
-warning: onset threshold not supported yet
-```
-
-So "you didn't tune it properly" is not an available explanation for aubio's
-result — the tuning knobs are not connected. The raw readings for all 72 runs are
-in [`results/aubio-all.json`](results/aubio-all.json) and
+The raw readings for all 72 runs are in
+[`results/aubio-all.json`](results/aubio-all.json) and
 [`results/aubio-sweep.tsv`](results/aubio-sweep.tsv); you can diff them without
 installing anything.
 

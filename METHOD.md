@@ -92,20 +92,24 @@ at all (broken DLLs on some Python 3.13 builds), a pass-through stub keeps
 
 ### aubio
 
-`aubionotes` 0.4.6. Sweep: 6 pitch methods × 4 onset thresholds × 3 minimum
-inter-onset intervals = 72 runs.
-
-All 72 produce the same 7 notes: `60,64,67,69,64,64,67`.
-`run-aubio.js` reports `distinct outputs across all combos: 1`.
-
-aubio prints the reason itself, on stderr, on every run:
+`aubionotes` 0.4.6 prints this on stderr on every run, no flags required:
 
 ```
 warning: onset threshold not supported yet
 ```
 
-The parameters are accepted and ignored. There is no "you tuned it badly"
-explanation available for this result.
+That is aubio's own admission that the onset-threshold parameter is not wired up.
+It is the primary evidence here; everything below is corroboration.
+
+Corroboration: a sweep of 6 pitch methods × 4 onset thresholds × 3 minimum
+inter-onset intervals = 72 runs. All 72 produce the same 7 notes
+(`60,64,67,69,64,64,67`). `run-aubio.js` reports
+`distinct outputs across all combos: 1`.
+
+Order matters. 72 identical outputs is an inference — 72 samples, all equal,
+therefore the knobs do nothing. The stderr line is a statement from the tool
+itself. The two agree, so the sweep is included as a check, not as the argument.
+There is no "you tuned it badly" explanation available for this result.
 
 ## 4. Results
 
