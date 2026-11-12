@@ -99,7 +99,8 @@ warning: onset threshold not supported yet
 ```
 
 That is aubio's own admission that the onset-threshold parameter is not wired up.
-It is the primary evidence here; everything below is corroboration.
+It is the primary evidence here; everything below is corroboration. Captured in
+`results/aubio-stderr.txt`: one distinct line, printed by 72 of 72 runs.
 
 Corroboration: a sweep of 6 pitch methods × 4 onset thresholds × 3 minimum
 inter-onset intervals = 72 runs. All 72 produce the same 7 notes

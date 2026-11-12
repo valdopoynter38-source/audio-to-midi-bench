@@ -23,6 +23,10 @@ telling you the knob is disconnected. It is the strongest piece of evidence in t
 repository, and it is why aubio's 6/11 below cannot be answered with "you tuned it
 badly" — there is nothing to tune.
 
+`run-aubio.js` captures it rather than letting it scroll past:
+[`results/aubio-stderr.txt`](results/aubio-stderr.txt) contains one distinct line,
+printed by **72 of 72 runs**. `verify.sh` diffs that file too.
+
 We also swept 6 pitch methods × 4 thresholds × 3 intervals before we found that line.
 All 72 combinations produce the same 7 notes. That sweep is ours; the line is theirs.
 When you have a confession, you don't lead with the inference.
@@ -116,7 +120,8 @@ wrote about itself.
 The raw readings for all 72 runs are in
 [`results/aubio-all.json`](results/aubio-all.json) and
 [`results/aubio-sweep.tsv`](results/aubio-sweep.tsv); you can diff them without
-installing anything.
+installing anything. The stderr capture, with its 72/72 count, is in
+[`results/aubio-stderr.txt`](results/aubio-stderr.txt).
 
 ## 5. The one note localmidi gets wrong
 
@@ -152,7 +157,7 @@ make-truth.py       regenerates both
 run-localmidi.js    shipped detectNotes + a WAV reader, no dependencies
 out-localmidi.mid   the .mid the real page exported (144 bytes)
 run-pyin.py         pYIN + our segmenter
-run-aubio.js        72-combination sweep
+run-aubio.js        72-combination sweep, captures aubio's stderr
 analyze.js          the ruler, writes score-*.json
 frames.js           per-frame table + boundary frame samples
 verify.sh           runs all of it and diffs against results/

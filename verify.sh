@@ -64,6 +64,7 @@ echo "== aubio (72 parameter combinations) =="
 if command -v aubionotes >/dev/null 2>&1 || [ -n "${AUBIO:-}" ]; then
   node run-aubio.js melody.wav 2>/dev/null | sed 's/^/  /'
   node analyze.js aubio out-aubio.json | sed 's/^/  /'
+  cmp_file "aubio-stderr" aubio-stderr.txt results/aubio-stderr.txt
   cmp_file "aubio-sweep" aubio-sweep.tsv results/aubio-sweep.tsv
   cmp_file "aubio-out" out-aubio.json results/out-aubio.json
   cmp_file "score-aubio" score-aubio.json results/score-aubio.json
