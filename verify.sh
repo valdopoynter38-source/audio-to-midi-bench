@@ -7,6 +7,11 @@
 # Requirements: node (for localmidi + scoring), python3 with librosa (pYIN),
 # aubionotes on PATH or AUBIO=/path/to/aubionotes (aubio). Missing engines are
 # skipped with a note, not silently ignored.
+#
+# The order is the point: run the engines, then measure the ruler's alignment
+# constant on the one sample where silence makes the answer unambiguous, then
+# score. Scoring before aligning would compare two time axes that are known to
+# be offset by ~58 ms, and every join measurement downstream would inherit it.
 
 set -u
 cd "$(dirname "$0")" || exit 1
@@ -24,6 +29,17 @@ cmp_file() {  # cmp_file <label> <generated> <expected>
 
 command -v node >/dev/null || { echo "node not found"; exit 1; }
 
+if python -c "from librosa_shim import import_librosa; import_librosa()" >/dev/null 2>&1; then
+  HAVE_PYIN=1
+else
+  HAVE_PYIN=0
+fi
+if command -v aubionotes >/dev/null 2>&1 || [ -n "${AUBIO:-}" ] || [ -x aubio/aubio-0.4.6-win64/bin/aubionotes.exe ]; then
+  HAVE_AUBIO=1
+else
+  HAVE_AUBIO=0
+fi
+
 echo "== input =="
 node -e '
 const b=require("fs").readFileSync("melody.wav");
@@ -34,68 +50,90 @@ while(off+8<=b.length){const id=b.toString("ascii",off,off+4),sz=b.readUInt32LE(
 console.log(`melody.wav  ${data/fmt.ch/(fmt.bits/8)} samples  ${fmt.sr} Hz  ${fmt.bits}-bit  ${fmt.ch} ch  ${b.length} bytes`);
 '
 node -e 'const t=require("./truth.json");console.log(`truth.json  ${t.notes.length} notes  ${t.notes[0].start}s .. ${t.notes[t.notes.length-1].end}s`)'
+node -e 'const t=require("./truth2.json");console.log(`truth2.json ${t.notes.length} notes  ${t.notes[0].start}s .. ${t.notes[t.notes.length-1].end}s  ${t.notes.filter(n=>n.glide_in>0).length} joins`)'
 
 echo
-echo "== localmidi (source, no dependencies) =="
+echo "== sample A: engines =="
 node run-localmidi.js melody.wav 2 | sed 's/^/  /'
-node analyze.js localmidi-js out-localmidi-s2.json | sed 's/^/  /'
-cmp_file "localmidi" out-localmidi-s2.json results/out-localmidi-s2.json
-cmp_file "score-js" score-localmidi-js.json results/score-localmidi-js.json
-
-echo
-echo "== localmidi (shipped page export, out-localmidi.mid) =="
-node analyze.js localmidi out-localmidi.mid | sed 's/^/  /'
-cmp_file "score-mid" score-localmidi.json results/score-localmidi.json
-
-echo
-echo "== pYIN =="
-if python -c "from librosa_shim import import_librosa; import_librosa()" >/dev/null 2>&1; then
-  python run-pyin.py melody.wav truth.json | sed 's/^/  /'
-  node analyze.js pyin out-pyin.json | sed 's/^/  /'
-  cmp_file "pyin" out-pyin.json results/out-pyin.json
-  cmp_file "score-pyin" score-pyin.json results/score-pyin.json
-else
-  say "pYIN" "skipped — librosa not importable (pip install librosa)"
-  skipped=$((skipped+1))
-fi
-
-echo
-echo "== aubio (72 parameter combinations) =="
-if command -v aubionotes >/dev/null 2>&1 || [ -n "${AUBIO:-}" ] || [ -x aubio/aubio-0.4.6-win64/bin/aubionotes.exe ]; then
-  node run-aubio.js melody.wav 2>/dev/null | sed 's/^/  /'
-  node analyze.js aubio out-aubio.json | sed 's/^/  /'
-  cmp_file "aubio-stderr" aubio-stderr.txt results/aubio-stderr.txt
-  cmp_file "aubio-sweep" aubio-sweep.tsv results/aubio-sweep.tsv
-  cmp_file "aubio-out" out-aubio.json results/out-aubio.json
-  cmp_file "score-aubio" score-aubio.json results/score-aubio.json
-else
-  say "aubio" "skipped — aubionotes not on PATH and AUBIO is unset"
-  skipped=$((skipped+1))
-fi
+if [ "$HAVE_PYIN" = 1 ]; then python run-pyin.py melody.wav truth.json | sed 's/^/  /'
+else say "pYIN" "skipped — librosa not importable (pip install librosa)"; skipped=$((skipped+1)); fi
+if [ "$HAVE_AUBIO" = 1 ]; then node run-aubio.js melody.wav 2>/dev/null | sed 's/^/  /'
+else say "aubio" "skipped — aubionotes not on PATH and AUBIO is unset"; skipped=$((skipped+1)); fi
 
 echo
 echo "== sample B: 27.89 s performed, 30 notes, legato + vibrato =="
 mkdir -p build-b
 node run-localmidi.js melody2.wav 2 build-b | sed 's/^/  /'
+if [ "$HAVE_PYIN" = 1 ]; then python run-pyin.py melody2.wav truth2.json build-b | sed 's/^/  /'
+else say "b-pYIN" "skipped — librosa not importable through librosa_shim"; skipped=$((skipped+1)); fi
+if [ "$HAVE_AUBIO" = 1 ]; then node run-aubio.js melody2.wav build-b 2>/dev/null | sed 's/^/  /'
+else say "b-aubio" "skipped — aubionotes not found"; skipped=$((skipped+1)); fi
+
+echo
+echo "== sample B at a fixed 90 ms: the pre-change instrument =="
+# Not a sample to rank engines on. This is the version of B this repository used
+# before join length was derived from the interval, kept rebuildable (see
+# make-truth2.py) so the alignment constant can be checked against a file whose
+# joins are different. If the constant came from one sample, this column would
+# not agree with the others.
+mkdir -p build-b90
+node run-localmidi.js melody2-90.wav 2 build-b90 | sed 's/^/  /'
+if [ "$HAVE_PYIN" = 1 ]; then python run-pyin.py melody2-90.wav truth2-90.json build-b90 | sed 's/^/  /'; fi
+if [ "$HAVE_AUBIO" = 1 ]; then node run-aubio.js melody2-90.wav build-b90 2>/dev/null | sed 's/^/  /'; fi
+
+echo
+echo "== the ruler's time axis =="
+# The constant is measured on sample A only: eleven notes, every one separated by
+# silence. It is then applied to every sample. If it ever had to change per file,
+# it would not be a constant and this file would be lying.
+if [ "$HAVE_PYIN" = 1 ] && [ "$HAVE_AUBIO" = 1 ]; then
+  node measure-onset.js truth.json out-localmidi-s2.json out-pyin.json out-aubio.json --json \
+    | sed -n '/^{/,$p' > align.json
+else
+  say "align" "kept — needs all three engines to measure the constants"
+fi
+node -e '
+const a=require("./align.json");
+for (const r of a.rows) console.log(`  ${r.tool.padEnd(11)} ${String(r.median_ms).padStart(6)} ms  (${r.matched}/${r.notes_total} notes matched, ${r.within_10ms_of_median} of those within 10 ms of it)`);
+'
+cmp_file "align" align.json results/align.json
+
+echo
+echo "== scoring (aligned first, then compared) =="
+node analyze.js localmidi-js out-localmidi-s2.json | sed 's/^/  /'
+node analyze.js localmidi out-localmidi.mid | sed 's/^/  /'
+cmp_file "localmidi" out-localmidi-s2.json results/out-localmidi-s2.json
+cmp_file "score-js" score-localmidi-js.json results/score-localmidi-js.json
+cmp_file "score-mid" score-localmidi.json results/score-localmidi.json
+
+if [ "$HAVE_PYIN" = 1 ]; then
+  node analyze.js pyin out-pyin.json | sed 's/^/  /'
+  cmp_file "pyin" out-pyin.json results/out-pyin.json
+  cmp_file "score-pyin" score-pyin.json results/score-pyin.json
+fi
+
+if [ "$HAVE_AUBIO" = 1 ]; then
+  node analyze.js aubio out-aubio.json | sed 's/^/  /'
+  cmp_file "aubio-stderr" aubio-stderr.txt results/aubio-stderr.txt
+  cmp_file "aubio-sweep" aubio-sweep.tsv results/aubio-sweep.tsv
+  cmp_file "aubio-out" out-aubio.json results/out-aubio.json
+  cmp_file "score-aubio" score-aubio.json results/score-aubio.json
+fi
+
 node analyze.js localmidi build-b/out-localmidi-s2.json truth2.json build-b | sed 's/^/  /'
 cmp_file "b-localmidi" build-b/out-localmidi-s2.json results/b/out-localmidi-s2.json
 cmp_file "b-score-loc" build-b/score-localmidi.json results/b/score-localmidi.json
 
-if python -c "from librosa_shim import import_librosa; import_librosa()" >/dev/null 2>&1; then
-  python run-pyin.py melody2.wav truth2.json build-b | sed 's/^/  /'
+if [ "$HAVE_PYIN" = 1 ]; then
   node analyze.js pyin build-b/out-pyin.json truth2.json build-b | sed 's/^/  /'
   cmp_file "b-pyin" build-b/out-pyin.json results/b/out-pyin.json
   cmp_file "b-score-pyin" build-b/score-pyin.json results/b/score-pyin.json
   # does the file on disk actually contain the pitch curve truth2.json claims?
   python check-synth.py build-b | sed 's/^/  /'
   cmp_file "b-synth-check" build-b/synth-check.json results/b/synth-check.json
-else
-  say "b-pYIN" "skipped — librosa not importable through librosa_shim"
-  skipped=$((skipped+1))
 fi
 
-if command -v aubionotes >/dev/null 2>&1 || [ -n "${AUBIO:-}" ] || [ -x aubio/aubio-0.4.6-win64/bin/aubionotes.exe ]; then
-  node run-aubio.js melody2.wav build-b 2>/dev/null | sed 's/^/  /'
+if [ "$HAVE_AUBIO" = 1 ]; then
   node analyze.js aubio build-b/out-aubio.json truth2.json build-b | sed 's/^/  /'
   cmp_file "b-aubio-stder" build-b/aubio-stderr.txt results/b/aubio-stderr.txt
   cmp_file "b-aubio-sweep" build-b/aubio-sweep.tsv results/b/aubio-sweep.tsv
@@ -104,9 +142,26 @@ if command -v aubionotes >/dev/null 2>&1 || [ -n "${AUBIO:-}" ] || [ -x aubio/au
   # control: can aubio read this timbre at all, when the neighbours are gone?
   node probe-steady.js melody2.wav truth2.json build-b | sed 's/^/  /'
   cmp_file "b-steady-probe" build-b/steady-probe.json results/b/steady-probe.json
-else
-  say "b-aubio" "skipped — aubionotes not found"
-  skipped=$((skipped+1))
+fi
+
+# the 90 ms instrument: onsets are the point, so the onset report is checked too
+node analyze.js localmidi build-b90/out-localmidi-s2.json truth2-90.json build-b90 | sed 's/^/  /'
+cmp_file "b90-localmidi" build-b90/out-localmidi-s2.json results/b90/out-localmidi-s2.json
+cmp_file "b90-score-loc" build-b90/score-localmidi.json results/b90/score-localmidi.json
+if [ "$HAVE_PYIN" = 1 ]; then
+  node analyze.js pyin build-b90/out-pyin.json truth2-90.json build-b90 | sed 's/^/  /'
+  cmp_file "b90-pyin" build-b90/out-pyin.json results/b90/out-pyin.json
+  cmp_file "b90-score-pyin" build-b90/score-pyin.json results/b90/score-pyin.json
+fi
+if [ "$HAVE_AUBIO" = 1 ]; then
+  node analyze.js aubio build-b90/out-aubio.json truth2-90.json build-b90 | sed 's/^/  /'
+  cmp_file "b90-aubio-out" build-b90/out-aubio.json results/b90/out-aubio.json
+  cmp_file "b90-score-aubio" build-b90/score-aubio.json results/b90/score-aubio.json
+fi
+if [ "$HAVE_PYIN" = 1 ] && [ "$HAVE_AUBIO" = 1 ]; then
+  node measure-onset.js truth2-90.json build-b90/out-localmidi-s2.json build-b90/out-pyin.json build-b90/out-aubio.json \
+    --json --no-constants | sed -n '/^{/,$p' > build-b90/onset.json
+  cmp_file "b90-onset" build-b90/onset.json results/b90/onset.json
 fi
 
 echo

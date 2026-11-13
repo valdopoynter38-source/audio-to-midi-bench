@@ -4,77 +4,95 @@
   "wrong": 5,
   "missing": 0,
   "total_out": 7,
-  "used": 5,
-  "spurious": 2,
+  "used": 6,
+  "spurious": 1,
   "glide_out_count": 0,
+  "join_piece_count": 0,
   "dangling": 0,
-  "answered_by_spurious": 2,
+  "join_piece_note": "an output that starts inside a note's join window and answers nothing: one glide cut into two. Neither a duplicate of a truth note (spurious) nor a lost output (dangling) — it is the join being chopped, so it gets its own bucket rather than being forced into either.",
+  "answered_by_spurious": 0,
+  "align_ms": 57,
+  "merged_outputs": 4,
+  "merged_notes": 9,
+  "solo_notes": 2,
+  "merged_note": "merged is a second axis, not a bucket: it says how the answer was shaped (one output covering two notes), while correct/wrong/missing says whether the pitch was right. A note can be both correct and merged. merged_notes + solo_notes = counted_notes; merged notes are by construction answered, so they can never be missing.",
   "rows": [
     {
       "truth": 60,
       "at": 0,
       "got": 60,
-      "verdict": "ok"
+      "verdict": "ok",
+      "merged": true
     },
     {
       "truth": 62,
       "at": 0.6,
       "got": 60,
-      "verdict": "wrong 60 (-2 st)"
+      "verdict": "wrong 60 (-2 st)",
+      "merged": true
     },
     {
       "truth": 64,
       "at": 1.2,
       "got": 64,
-      "verdict": "ok"
+      "verdict": "ok",
+      "merged": false
     },
     {
       "truth": 67,
       "at": 1.8,
       "got": 67,
-      "verdict": "ok"
+      "verdict": "ok",
+      "merged": false
     },
     {
       "truth": 69,
       "at": 2.4,
       "got": 69,
-      "verdict": "ok"
+      "verdict": "ok",
+      "merged": true
     },
     {
       "truth": 67,
       "at": 3,
       "got": 69,
-      "verdict": "wrong 69 (+2 st)"
+      "verdict": "wrong 69 (+2 st)",
+      "merged": true
     },
     {
       "truth": 64,
       "at": 3.6,
       "got": 64,
-      "verdict": "ok"
+      "verdict": "ok",
+      "merged": true
     },
     {
       "truth": 62,
       "at": 4.2,
       "got": 64,
-      "verdict": "wrong 64 (+2 st)"
+      "verdict": "wrong 64 (+2 st)",
+      "merged": true
     },
     {
       "truth": 60,
       "at": 4.8,
       "got": 64,
-      "verdict": "wrong 64 (+4 st)"
+      "verdict": "wrong 64 (+4 st)",
+      "merged": true
     },
     {
       "truth": 64,
       "at": 6,
       "got": 64,
-      "verdict": "ok"
+      "verdict": "ok",
+      "merged": true
     },
     {
       "truth": 65,
       "at": 6.15,
       "got": 64,
-      "verdict": "wrong 64 (-1 st)"
+      "verdict": "wrong 64 (-1 st)",
+      "merged": true
     }
   ],
   "hist_out": {

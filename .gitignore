@@ -2,6 +2,8 @@
 /*.json
 !truth.json
 !truth2.json
+!truth2-90.json
+!align.json
 /*.tsv
 __pycache__/
 *.pyc
@@ -11,3 +13,5 @@ __pycache__/
 aubio/
 # sample B is generated into its own dir; the committed copies live in results/b/
 /build-b/
+/build-b90/
+/build-90/

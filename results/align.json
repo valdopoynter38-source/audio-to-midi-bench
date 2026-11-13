@@ -1,0 +1,50 @@
+{
+ "measured_on": "truth.json",
+ "sample_notes": 11,
+ "method": "for each truth note: among the outputs with the same pitch starting within +/-150 ms, take the nearest; delta = out.start - truth.start; report the median",
+ "rows": [
+  {
+   "tool": "localmidi",
+   "source": "out-localmidi-s2.json",
+   "notes_total": 11,
+   "matched": 10,
+   "unmatched": 1,
+   "median_ms": -11,
+   "p25_ms": -14,
+   "p75_ms": -10,
+   "within_10ms_of_median": 9,
+   "within_10ms_share": 0.9
+  },
+  {
+   "tool": "pyin",
+   "source": "out-pyin.json",
+   "notes_total": 11,
+   "matched": 11,
+   "unmatched": 0,
+   "median_ms": 0,
+   "p25_ms": -1,
+   "p75_ms": 4,
+   "within_10ms_of_median": 10,
+   "within_10ms_share": 0.909
+  },
+  {
+   "tool": "aubio",
+   "source": "out-aubio.json",
+   "notes_total": 11,
+   "matched": 6,
+   "unmatched": 5,
+   "median_ms": 57,
+   "p25_ms": 54,
+   "p75_ms": 58,
+   "within_10ms_of_median": 6,
+   "within_10ms_share": 1
+  }
+ ],
+ "why_this_file": "silence is the only place where \"the note starts here\" is not a matter of opinion, so the constant is read off the one sample where a join cannot bias it",
+ "caveat": "a constant read off this file and applied to every file is a ruler, not a correction: if it had to change when the sample changed, it would not be constant",
+ "constants_ms": {
+  "localmidi": -11,
+  "pyin": 0,
+  "aubio": 57
+ }
+}

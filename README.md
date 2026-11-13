@@ -1,23 +1,28 @@
-# Audio-to-MIDI: three engines, two recordings, one ruler
+# Audio-to-MIDI: three engines, one performance, one ruler
 
-Two monophonic files whose pitches are known before any tool runs, pushed through
+Monophonic recordings whose pitches are known before any tool runs, pushed through
 three pitch-to-MIDI engines. Every number below is reproduced by one command:
 
 ```bash
 ./verify.sh
 ```
 
-20 byte-comparisons across the two samples. A full run takes about ten minutes on
-a laptop — pYIN runs three times (once per file for the results, once more inside
-`check-synth.py`), and the 72-combination aubio sweep runs twice. If your run prints
-`0 differing`, you have the same tables we published.
+28 byte-comparisons across the samples; a full run takes about twenty minutes on a
+laptop, most of it pYIN (three runs) and the two 72-combination aubio sweeps. If
+your run prints `0 differing`, you have the same tables we published.
 
 **Sample A** — 7.60 s, 11 notes, every note separated by silence. Trap questions:
 a repeated pitch, two 150 ms sixteenths, one glide. Engines can be ranked on it.
 
-**Sample B** — 27.89 s, 30 notes, *played* rather than rendered: 26 joins, real
-vibrato, one octave portamento. Sample A asks whether an engine can find a note.
-Sample B asks whether it can find a note that never stops.
+**Sample B** — 27.89 s, 30 notes, *played* rather than rendered: 26 joins whose
+length is derived from the interval (40–140 ms), real vibrato, one octave
+portamento. Sample A asks whether an engine can find a note. Sample B asks whether
+it can find a note that never stops.
+
+**Sample B at a fixed 90 ms** — the same performance with every join at 90 ms, the
+version this repository used before the joins were derived from the interval. It is
+not a third ranking; it exists to check one number, and it is rebuilt by the same
+script.
 
 ## aubio says it about itself
 
@@ -98,17 +103,83 @@ No note is separated from the next by silence except those three.
 | **localmidi** | **14/30** | 16 | 0 |
 | **aubio notes** 0.4.6 | **9/30** | 21 | 0 |
 
-| engine | notes out | used | spurious | glide | dangling | onset (median) | truth notes sharing one output |
-|---|---|---|---|---|---|---|---|
-| pYIN | 29 | 29 | 0 | 0 | 0 | +48 ms | 1 |
-| localmidi | 22 | 22 | 0 | 0 | 0 | +12 ms | 8 |
-| aubio | 30 | 30 | 0 | 0 | 0 | +58 ms | 0 |
+| engine | notes out | used | spurious | glide | join pieces | dangling | onset raw → aligned | merged outputs / notes |
+|---|---|---|---|---|---|---|---|---|
+| pYIN | 29 | 29 | 0 | 0 | 0 | 0 | +48 → +48 ms (29/30 paired) | 1 / 2 |
+| localmidi | 22 | 22 | 0 | 0 | 0 | 0 | +29 → +40 ms (12/30 paired) | 7 / 15 |
+| aubio | 30 | 30 | 0 | 0 | 0 | 0 | +59 → +2 ms (9/30 paired) | 0 / 0 |
 
 The same two-sided accounting holds; both sums balance in `results/b/score-*.json`.
-`truth notes sharing one output` is `notes answered − distinct outputs` — how many
-truth notes have to double up on somebody else's note. It counts notes, not
-merges: localmidi's 8 is 30 notes answered by 22 outputs, while the joins that
-cause it number 7.
+Three things in that table need naming, because each one used to be something else:
+
+- **onset raw → aligned.** The second number has the constant from
+  [the ruler's time axis](#the-rulers-time-axis-before-the-sample-is-judged)
+  removed. aubio moves from +59 to +2: after the constant, it is not late at all.
+  pYIN's constant is 0 so its number does not move, and localmidi's is −11 ms, so
+  its number moves by exactly 11 — neither of them shrinks towards zero, which is
+  how you can see their lag is not a delay. The pairing is the same rule as
+  `measure-onset.js` (nearest same-pitch output inside ±150 ms, unmatched counted,
+  never zero), so this column and the table below report the *same* number for the
+  same engine; the count in brackets is how many of the 30 notes had anything to
+  pair with. For localmidi 12 of 30: when it welds two notes into a note of the
+  wrong pitch, there is nothing of the truth pitch near the boundary to pair with,
+  and that is a reading too.
+- **merged outputs / notes.** 7 of localmidi's 22 outputs each cover at least half
+  of two neighbouring truth notes, and between them they swallow 15 of the 30. This
+  is a **second axis, not a bucket**: it says how the answer was shaped, while
+  correct/wrong/missing says whether the pitch was right. A note can be both
+  correct and merged. `merged notes + solo notes = 30`, and a merged note can never
+  be missing, because it was answered by definition.
+- **join pieces.** An output that starts inside a join and answers nothing: one
+  glide cut in two. It is not spurious (it is on real notes) and it is not a lost
+  output, so it gets its own bucket instead of being pushed into either — aubio
+  produces exactly one of these, on the 90 ms version of this file.
+
+### The ruler's time axis, before the sample is judged
+
+An engine that reports every note 60 ms late is not wrong about the notes, it is
+offset. Comparing its timestamps to the truth as they arrive measures that offset
+and calls it an error — and the error grows as the notes get shorter. On a 40 ms
+join, a 60 ms delay is longer than the join itself, so a late onset lands in the
+next note, and there is no longer any way to tell "misread the join" from "arrived
+after it". That is the point at which a benchmark starts measuring its own ruler.
+
+So the offset is a constant of the ruler, measured once on the recording where the
+question has an unambiguous answer — sample A, eleven notes, every one separated by
+silence — written to `align.json`, and subtracted from every onset before anything
+is compared, on every sample.
+
+| engine | sample A (silence) | B at a fixed 90 ms | B as shipped (30–140 ms) |
+|---|---|---|---|
+| **aubio** | **+57 ms** (6/6 within 10 ms) | **+61 ms** (4/4) | **+59 ms** (9/9) |
+| pYIN | 0 ms (10/11) | +82 ms (15/29) | +48 ms (13/29) |
+| localmidi | −11 ms (9/10) | +64 ms (6/12) | +29 ms (4/12) |
+
+The two halves of that table are read differently, and the difference is the whole
+point.
+
+**aubio's number does not move.** 57, 61, 59 — and on every file, every matched note
+sits within 10 ms of its own median. That is a constant: a fixed delay in its onset
+detector, a property of the tool, and it belongs to the ruler. Remove it and aubio's
+onsets land at +2 ms on B and +4 ms on the 90 ms version. It was never late; its
+*pitch* is what is wrong.
+
+**pYIN's and localmidi's numbers do move** — 0 → 82 → 48 and −11 → 64 → 29. Those
+are not delays and must not be aligned away. They are how far each engine's note
+boundary slips on joined material, which is a finding about the engine, not a
+constant of the measurement. Subtracting them would delete the thing being measured
+— and it does not even tidy the number: localmidi's residual on B goes from +29 to
++40, because the constant being removed is −11. A residual that grows when you
+subtract a constant is not an offset.
+
+The middle column is not a sample to rank engines on. It is the version of B this
+repository used before the joins were derived from the interval, kept rebuildable
+(`python make-truth2.py 0.090 melody2-90`) for exactly one purpose: to check the
+constant against a file whose joins are different. If the constant had been an
+artefact of one file, the columns would not agree.
+
+Rows are recomputed by `verify.sh` on every run and diffed against
+`results/align.json`; the constants live in `align.json` and nowhere else.
 
 ### It is the join, and here is the control
 
@@ -132,13 +203,41 @@ becoming `76@20.196–21.368`, 72→71 again, and 64→65 inside a repeated note
 benchmark made only of wide leaps would have shown the first three and none of
 these.
 
-**aubio reports a pitch from a moment it is not looking at.** Its notes are all
-58 ms late, and the pitch it attaches to each note is the pitch of the audio about
-30 ms *before* that onset — 29 of 30 notes match the truth pitch curve at that
-offset on the 10 ms grid, and no other offset gets close (`pitch_offset_ms` in
-`results/b/score-aubio.json`, scanned −200…+80 ms in 10 ms steps). On sample A
-that 30 ms of lookback lands in silence or in a steady tone, so it never hurt
-anybody. Here it lands inside a glide.
+**aubio reports a pitch from a moment it is not looking at.** After the alignment
+constant is removed its onsets are 1 ms off, so it is not late. What is late is the
+*pitch*: it attaches to each note the pitch of the audio about 30 ms **before its
+own onset** — 29 of 30 notes match the truth pitch curve at that offset on the
+10 ms grid, and no other offset gets close (`pitch_offset_ms` in
+`results/b/score-aubio.json`, scanned −200…+80 ms in 10 ms steps). Put the two
+numbers together and it is reading the audio at about **27 ms after the true note
+start** — inside the join. On sample A that instant is silence or a steady tone and
+costs nothing. Here it is a glide, and the glide is the answer it reports.
+
+That is a prediction, not a description, so it can be checked. At 27 ms into a join
+of length G, the generator's pitch has covered `u = (27/G)^1.6` of the interval, so
+the reported pitch should be short of the target by `(1 − u) × interval`:
+
+| join | notes | read correctly | mean error | predicted |
+|---|---|---|---|---|
+| no join (3 detaches + the first note) | 4 | 4 | 0 | — |
+| 40 ms | 6 | 5 | −0.17 st | between |
+| 50 ms | 13 | 0 | +0.69 st | +0.62 st |
+| 60 ms | 1 | 0 | +2 st | +2.2 st |
+| 70 ms | 1 | 0 | +3 st | +3.1 st |
+| 80 ms | 3 | 0 | −4 st | −4.1 st |
+| 110 ms | 1 | 0 | −7 st | −7.2 st |
+| 140 ms | 1 | 0 | −11 st | −11.1 st |
+
+Every join of 60 ms or more is predicted to within 0.2 of a semitone, sign
+included. At 40 ms the glide is short enough that 27 ms in is already past halfway
+and the pitch rounds to the target — which is why 5 of those 6 are right, and why
+the boundary sits at about 45 ms, where `u` crosses 0.5.
+
+This is also the reason the 90 ms version of the file scores 4/30 while the shipped
+one scores 9/30: every join in that file is 90 ms, past the point where 27 ms in is
+nearer the previous note than the next one. Shortening joins makes this engine
+*worse* at pitch and makes localmidi *no* better at merging — one sample could not
+have shown both.
 
 **The control.** `probe-steady.js` cuts each note's stable body out of the same
 file, pads it with silence, and asks `aubionotes` about that alone — same binary,
@@ -319,19 +418,24 @@ truth.json          the 11 notes, written before any tool ran
 make-truth.py       regenerates both
 melody2.wav         sample B, the performed input (from make-truth2.py)
 truth2.json         the 30 notes + the pitch curve on a 10 ms grid
-make-truth2.py      regenerates both; joins, vibrato, envelope in one pass
+melody2-90.wav      sample B with every join fixed at 90 ms (the pre-change version)
+truth2-90.json      its key; `python make-truth2.py 0.090 melody2-90` rebuilds both
+make-truth2.py      regenerates all of the above; joins, vibrato, envelope in one pass
 librosa_shim.py     makes librosa importable and deterministic (both py scripts use it)
 run-localmidi.js    shipped detectNotes + a WAV reader, no dependencies
 out-localmidi.mid   the .mid the real page exported (144 bytes)
 run-pyin.py         pYIN + our segmenter
 run-aubio.js        72-combination sweep, captures aubio's stderr
+measure-onset.js    how late each engine reports the notes it does report
+align.json          the ruler's time constant, measured on sample A, one source
 analyze.js          the ruler, writes score-*.json
 frames.js           per-frame table + boundary frame samples
 check-synth.py      does melody2.wav contain the curve truth2.json claims?
 probe-steady.js     the control: each note's body alone, fed back to aubionotes
-verify.sh           runs all of it and diffs against results/ and results/b/
+verify.sh           runs all of it and diffs against results/, results/b/, results/b90/
 results/            sample A's expected outputs, committed
 results/b/          sample B's expected outputs, committed
+results/b90/        the 90 ms instrument's expected outputs, committed
 METHOD.md           the long-form method
 ```
 

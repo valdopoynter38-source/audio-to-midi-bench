@@ -1,0 +1,308 @@
+{
+  "counted_notes": 30,
+  "correct": 30,
+  "wrong": 0,
+  "missing": 0,
+  "total_out": 29,
+  "used": 29,
+  "spurious": 0,
+  "glide_out_count": 0,
+  "join_piece_count": 0,
+  "dangling": 0,
+  "join_piece_note": "an output that starts inside a note's join window and answers nothing: one glide cut into two. Neither a duplicate of a truth note (spurious) nor a lost output (dangling) — it is the join being chopped, so it gets its own bucket rather than being forced into either.",
+  "answered_by_spurious": 0,
+  "align_ms": 0,
+  "merged_outputs": 1,
+  "merged_notes": 2,
+  "solo_notes": 28,
+  "merged_note": "merged is a second axis, not a bucket: it says how the answer was shaped (one output covering two notes), while correct/wrong/missing says whether the pitch was right. A note can be both correct and merged. merged_notes + solo_notes = counted_notes; merged notes are by construction answered, so they can never be missing.",
+  "rows": [
+    {
+      "truth": 64,
+      "at": 0,
+      "got": 64,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 69,
+      "at": 1.4,
+      "got": 69,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 67,
+      "at": 2.9,
+      "got": 67,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 65,
+      "at": 3.65,
+      "got": 65,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 64,
+      "at": 4.4,
+      "got": 64,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 72,
+      "at": 5.5,
+      "got": 72,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 71,
+      "at": 7.1,
+      "got": 71,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 69,
+      "at": 7.75,
+      "got": 69,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 64,
+      "at": 9.85,
+      "got": 64,
+      "verdict": "ok",
+      "merged": true
+    },
+    {
+      "truth": 64,
+      "at": 10.4,
+      "got": 64,
+      "verdict": "ok",
+      "merged": true
+    },
+    {
+      "truth": 65,
+      "at": 10.95,
+      "got": 65,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 67,
+      "at": 11.55,
+      "got": 67,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 69,
+      "at": 12.15,
+      "got": 69,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 67,
+      "at": 13.45,
+      "got": 67,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 65,
+      "at": 13.63,
+      "got": 65,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 64,
+      "at": 13.81,
+      "got": 64,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 62,
+      "at": 13.99,
+      "got": 62,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 60,
+      "at": 14.19,
+      "got": 60,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 64,
+      "at": 15.09,
+      "got": 64,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 69,
+      "at": 15.49,
+      "got": 69,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 81,
+      "at": 16.14,
+      "got": 81,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 79,
+      "at": 17.24,
+      "got": 79,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 76,
+      "at": 17.94,
+      "got": 76,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 72,
+      "at": 18.69,
+      "got": 72,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 77,
+      "at": 20.14,
+      "got": 77,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 76,
+      "at": 20.74,
+      "got": 76,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 74,
+      "at": 21.34,
+      "got": 74,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 72,
+      "at": 21.94,
+      "got": 72,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 71,
+      "at": 23.44,
+      "got": 71,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 69,
+      "at": 23.99,
+      "got": 69,
+      "verdict": "ok",
+      "merged": false
+    }
+  ],
+  "hist_out": {
+    "<0.2s": 4,
+    "0.2-0.5s": 1,
+    "0.5-1.0s": 13,
+    ">1.0s": 11
+  },
+  "hist_truth": {
+    "<0.2s": 4,
+    "0.2-0.5s": 1,
+    "0.5-1.0s": 15,
+    ">1.0s": 10
+  },
+  "glide_out": [],
+  "pitch_error": {
+    "steady_median_abs_cents": 0,
+    "steady_notes": 25,
+    "vibrato_median_abs_cents": 0,
+    "vibrato_notes": 5,
+    "vibrato_envelope_pp_cents": [
+      {
+        "at": 7.75,
+        "pitch": 69,
+        "pp_cents": 694.1
+      },
+      {
+        "at": 12.15,
+        "pitch": 69,
+        "pp_cents": 222.1
+      },
+      {
+        "at": 18.69,
+        "pitch": 72,
+        "pp_cents": 410.1
+      },
+      {
+        "at": 21.94,
+        "pitch": 72,
+        "pp_cents": 212.1
+      },
+      {
+        "at": 23.99,
+        "pitch": 69,
+        "pp_cents": 46608.6
+      }
+    ],
+    "note": "reported separately on purpose: a vibrato note's pitch swings 20-40 cents at 5-6 Hz, so a single reported value sits at an arbitrary phase of that swing and its 'average error' is not a measurement. The full envelope is f0_cents in the truth file; pp_cents above is its peak-to-peak inside each vibrato note."
+  },
+  "join": {
+    "notes_with_an_answer": 30,
+    "distinct_outputs_answering": 29,
+    "notes_sharing_an_output": 1,
+    "onset_matched": 29,
+    "onset_unmatched": 1,
+    "onset_raw_median_ms": 82,
+    "onset_aligned_median_ms": 82,
+    "onset_p95_abs_ms": 98,
+    "note": "onset = output.start - truth.start; positive means the note is reported late. Pairing is measure-onset.js's, identical: per truth note, the nearest same-pitch output starting within +/-150 ms, and unmatched is counted, never zero. It is not the output that answered the note: when a note is merged, that output carries the neighbour's onset, and the same offset would then come out as two different numbers in two files. onset_raw carries the engine's own offset; onset_aligned has align_ms removed, so what is left is the part that is specific to this file. notes_sharing_an_output counts truth notes that had to share one output with another.",
+    "join_by_glide_ms": [
+      {
+        "glide_ms": 0,
+        "notes": 4,
+        "correct": 4,
+        "mean_error_st": 0
+      },
+      {
+        "glide_ms": 90,
+        "notes": 26,
+        "correct": 26,
+        "mean_error_st": 0
+      }
+    ],
+    "pitch_offset_ms": 30,
+    "pitch_offset_match": "29/29",
+    "pitch_offset_note": "best single offset such that the truth pitch curve at (output.start + offset) reproduces the pitch this engine reported; measured from the raw, unaligned onset; scanned -200..+80 ms in 10 ms steps"
+  },
+  "tool": "pyin",
+  "source": "build-b90/out-pyin.json"
+}

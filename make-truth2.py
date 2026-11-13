@@ -42,10 +42,21 @@ What truth2.json carries that truth.json does not
     against; without it, "the truth is known" would be a claim about a script
     rather than about the file.
 
-Usage:  python make-truth2.py     ->  melody2.wav, truth2.json
+Usage:  python make-truth2.py                      ->  melody2.wav, truth2.json
+        python make-truth2.py 0.090 melody2-90     ->  melody2-90.wav, truth2-90.json
+
+The second form exists for one reason: the first version of this sample used a
+constant 90 ms join, and the join length was changed only *after* that version
+had already been used to measure something. That old sample is not the sample
+this repository ships, but it is the instrument that separates "the engine is
+late" from "the engine misreads joins", so it has to be rebuildable byte for
+byte rather than remembered. Passing a number fixes every join at that length;
+the notes, vibrato, timbre and noise are identical because the generator is
+seeded and the glide length consumes no random numbers.
 """
 import json
 import math
+import sys
 import wave
 import struct
 
@@ -55,6 +66,12 @@ SR = 44100
 RNG = np.random.default_rng(20261113)
 F0_GRID = 0.010          # f0_cents resolution, seconds
 TAIL = 0.70              # silence after the last note
+
+# glide policy: "interval" (default, the shipped sample) or a fixed length in
+# seconds (the pre-change sample, kept rebuildable — see the docstring)
+GLIDE_MODE = sys.argv[1] if len(sys.argv) > 1 else "interval"
+PREFIX = sys.argv[2] if len(sys.argv) > 2 else "melody2"
+TRUTH = PREFIX.replace("melody", "truth")   # melody2 -> truth2, melody2-90 -> truth2-90
 
 # (pitch, dur, articulation, vibrato(depth_cents, rate_hz) or None)
 # Articulation only decides the amplitude envelope; the *pitch* is one
@@ -115,6 +132,8 @@ def glide_for(prev_pitch, pitch, artic):
     """
     if artic == "detached" or prev_pitch is None or prev_pitch == pitch:
         return 0.0
+    if GLIDE_MODE != "interval":
+        return float(GLIDE_MODE)
     return round(min(0.140, max(0.030, 0.030 + 0.010 * abs(pitch - prev_pitch))), 3)
 
 
@@ -228,7 +247,7 @@ sig = sig * (0.72 / peak)
 pcm = np.clip(sig, -1.0, 1.0)
 frames = (pcm * 32767.0).astype("<i2").tobytes()
 
-with wave.open("melody2.wav", "wb") as w:
+with wave.open(PREFIX + ".wav", "wb") as w:
     w.setnchannels(1)
     w.setsampwidth(2)
     w.setframerate(SR)
@@ -242,7 +261,7 @@ gi = np.clip((grid * SR).astype(int), 0, N - 1)
 f0_cents = [round(float(1200.0 * math.log2(max(f0[i], 1e-9) / 440.0)), 1) for i in gi]
 
 truth = {
-    "file": "melody2.wav",
+    "file": PREFIX + ".wav",
     "sample_rate": SR,
     "duration": TOTAL,
     "performance": "synthesised legato + vibrato; see make-truth2.py",
@@ -267,7 +286,7 @@ truth = {
         "stable body of the note."
     ),
 }
-with open("truth2.json", "w", encoding="utf-8", newline="\n") as f:
+with open(TRUTH + ".json", "w", encoding="utf-8", newline="\n") as f:
     json.dump(truth, f, indent=1, ensure_ascii=False)
 
 print("wav bytes:", len(frames) + 44)
