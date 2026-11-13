@@ -11,7 +11,7 @@
   "dangling": 0,
   "join_piece_note": "an output that starts inside a note's join window and answers nothing: one glide cut into two. Neither a duplicate of a truth note (spurious) nor a lost output (dangling) — it is the join being chopped, so it gets its own bucket rather than being forced into either.",
   "answered_by_spurious": 0,
-  "align_ms": -11,
+  "align_ms": -13,
   "align_status": "constant",
   "merged_outputs": 7,
   "merged_notes": 15,
@@ -283,8 +283,8 @@
     "onset_matched": 12,
     "onset_unmatched": 18,
     "onset_raw_median_ms": 64,
-    "onset_aligned_median_ms": 75,
-    "onset_p95_abs_ms": 90,
+    "onset_aligned_median_ms": 77,
+    "onset_p95_abs_ms": 92,
     "note": "onset = output.start - truth.start; positive means the note is reported late. Pairing is measure-onset.js's, identical: per truth note, the nearest same-pitch output starting within +/-150 ms, and unmatched is counted, never zero. It is not the output that answered the note: when a note is merged, that output carries the neighbour's onset, and the same offset would then come out as two different numbers in two files. onset_raw carries the engine's own offset; onset_aligned has align_ms removed, so what is left is the part that is specific to this file. notes_sharing_an_output counts truth notes that had to share one output with another.",
     "join_by_glide_ms": [
       {

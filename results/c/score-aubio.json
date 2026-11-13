@@ -1,0 +1,129 @@
+{
+  "counted_notes": 13,
+  "correct": 9,
+  "wrong": 4,
+  "missing": 0,
+  "total_out": 10,
+  "used": 9,
+  "spurious": 1,
+  "glide_out_count": 0,
+  "join_piece_count": 0,
+  "dangling": 0,
+  "join_piece_note": "an output that starts inside a note's join window and answers nothing: one glide cut into two. Neither a duplicate of a truth note (spurious) nor a lost output (dangling) — it is the join being chopped, so it gets its own bucket rather than being forced into either.",
+  "answered_by_spurious": 0,
+  "align_ms": 0,
+  "align_status": "withheld",
+  "merged_outputs": 3,
+  "merged_notes": 7,
+  "solo_notes": 6,
+  "merged_note": "merged is a second axis, not a bucket: it says how the answer was shaped (one output covering two notes), while correct/wrong/missing says whether the pitch was right. A note can be both correct and merged. merged_notes + solo_notes = counted_notes; merged notes are by construction answered, so they can never be missing.",
+  "rows": [
+    {
+      "truth": 57,
+      "at": 0,
+      "got": 57,
+      "verdict": "ok",
+      "merged": true
+    },
+    {
+      "truth": 59,
+      "at": 0.68,
+      "got": 57,
+      "verdict": "wrong 57 (-2 st)",
+      "merged": true
+    },
+    {
+      "truth": 61,
+      "at": 1.36,
+      "got": 61,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 64,
+      "at": 2.02,
+      "got": 64,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 62,
+      "at": 2.96,
+      "got": 62,
+      "verdict": "ok",
+      "merged": true
+    },
+    {
+      "truth": 60,
+      "at": 3.61,
+      "got": 62,
+      "verdict": "wrong 62 (+2 st)",
+      "merged": true
+    },
+    {
+      "truth": 67,
+      "at": 4.46,
+      "got": 67,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 65,
+      "at": 5.3,
+      "got": 65,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 63,
+      "at": 6.01,
+      "got": 63,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 69,
+      "at": 6.76,
+      "got": 69,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 66,
+      "at": 7.66,
+      "got": 66,
+      "verdict": "ok",
+      "merged": true
+    },
+    {
+      "truth": 58,
+      "at": 8.5,
+      "got": 66,
+      "verdict": "wrong 66 (+8 st)",
+      "merged": true
+    },
+    {
+      "truth": 56,
+      "at": 9.16,
+      "got": 66,
+      "verdict": "wrong 66 (+10 st)",
+      "merged": true
+    }
+  ],
+  "hist_out": {
+    "<0.2s": 0,
+    "0.2-0.5s": 1,
+    "0.5-1.0s": 6,
+    ">1.0s": 3
+  },
+  "hist_truth": {
+    "<0.2s": 0,
+    "0.2-0.5s": 0,
+    "0.5-1.0s": 13,
+    ">1.0s": 0
+  },
+  "glide_out": [],
+  "tool": "aubio",
+  "source": "build-c/out-aubio.json",
+  "align_why": "spoke about only 7 of 11 notes on sample A"
+}

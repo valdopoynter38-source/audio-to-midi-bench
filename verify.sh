@@ -9,12 +9,19 @@
 # skipped with a note, not silently ignored.
 #
 # The order is the point: run the engines, then measure the ruler's alignment
-# constant on the one sample where silence makes the answer unambiguous, then
+# constant on two samples where silence makes the answer unambiguous, then
 # score. Scoring before aligning would compare two time axes that are known to
 # be offset by tens of milliseconds, and every join measurement downstream would
-# inherit it. The constant is only emitted for an engine that answered that
-# sample more or less in full: a median taken over the notes a tool chose to
-# report is that tool's selection, not a property of the ruler.
+# inherit it.
+#
+# Two samples, not one. A single sample cannot distinguish "this engine is 11 ms
+# early" from "this engine is 11 ms early on this file", and running the same
+# file twice — on one machine or on two — cannot distinguish them either: that
+# is reproducibility, and it is not the question. So the same condition
+# (silence between every note) is built twice with different details, and the
+# constant is written only if both agree within 10 ms. An engine that answers
+# one of them only in part (aubio: 7 of 11, 9 of 13) is withheld regardless:
+# a median taken over the notes a tool chose to report is that tool's selection.
 
 set -u
 cd "$(dirname "$0")" || exit 1
@@ -54,6 +61,7 @@ console.log(`melody.wav  ${data/fmt.ch/(fmt.bits/8)} samples  ${fmt.sr} Hz  ${fm
 '
 node -e 'const t=require("./truth.json");console.log(`truth.json  ${t.notes.length} notes  ${t.notes[0].start}s .. ${t.notes[t.notes.length-1].end}s`)'
 node -e 'const t=require("./truth2.json");console.log(`truth2.json ${t.notes.length} notes  ${t.notes[0].start}s .. ${t.notes[t.notes.length-1].end}s  ${t.notes.filter(n=>n.glide_in>0).length} joins`)'
+node -e 'const t=require("./truth3.json");console.log(`truth3.json ${t.notes.length} notes  ${t.notes[0].start}s .. ${t.notes[t.notes.length-1].end}s  ${new Set(t.notes.map(n=>n.pitch)).size} distinct pitches  gaps ${t.notes.slice(1).map((n,i)=>Math.round((n.start-t.notes[i].end)*1000)).join(",")} ms`)'
 
 echo
 echo "== sample A: engines =="
@@ -62,6 +70,20 @@ if [ "$HAVE_PYIN" = 1 ]; then python run-pyin.py melody.wav truth.json | sed 's/
 else say "pYIN" "skipped — librosa not importable (pip install librosa)"; skipped=$((skipped+1)); fi
 if [ "$HAVE_AUBIO" = 1 ]; then node run-aubio.js melody.wav 2>/dev/null | sed 's/^/  /'
 else say "aubio" "skipped — aubionotes not on PATH and AUBIO is unset"; skipped=$((skipped+1)); fi
+
+echo
+echo "== sample C: the same condition, every detail different =="
+# 13 notes instead of 11, no pitch repeated, 60-200 ms of silence between notes
+# instead of butt-joined, vibrato at 6.2 Hz instead of 5.5, one 300 ms descending
+# glide instead of a 600 ms rising one. The condition — silence between every
+# note — is untouched, which is the only thing that has to stay fixed. This
+# sample exists to answer one question, so it is not a sample to rank engines on.
+mkdir -p build-c
+node run-localmidi.js melody3.wav 2 build-c | sed 's/^/  /'
+if [ "$HAVE_PYIN" = 1 ]; then python run-pyin.py melody3.wav truth3.json build-c | sed 's/^/  /'
+else say "c-pYIN" "skipped — librosa not importable through librosa_shim"; skipped=$((skipped+1)); fi
+if [ "$HAVE_AUBIO" = 1 ]; then node run-aubio.js melody3.wav build-c 2>/dev/null | sed 's/^/  /'
+else say "c-aubio" "skipped — aubionotes not found"; skipped=$((skipped+1)); fi
 
 echo
 echo "== sample B: 27.89 s performed, 30 notes, legato + vibrato =="
@@ -76,32 +98,39 @@ echo
 echo "== sample B at a fixed 90 ms: the pre-change instrument =="
 # Not a sample to rank engines on. This is the version of B this repository used
 # before join length was derived from the interval, kept rebuildable (see
-# make-truth2.py) so the alignment constant can be checked against a file whose
-# joins are different. If the constant came from one sample, this column would
-# not agree with the others.
+# make-truth2.py) so that the joins can be re-measured on a file whose joins are
+# uniform. It used to double as the cross-sample check on the alignment constant.
+# It no longer does: aubio answers 4 of its 30 notes, so the "same number at a
+# different join" that this file once supplied came from a column that is now
+# withheld on its own coverage. The check moved to sample C, where all three
+# engines speak about the whole file.
 mkdir -p build-b90
 node run-localmidi.js melody2-90.wav 2 build-b90 | sed 's/^/  /'
 if [ "$HAVE_PYIN" = 1 ]; then python run-pyin.py melody2-90.wav truth2-90.json build-b90 | sed 's/^/  /'; fi
 if [ "$HAVE_AUBIO" = 1 ]; then node run-aubio.js melody2-90.wav build-b90 2>/dev/null | sed 's/^/  /'; fi
 
 echo
-echo "== the ruler's time axis =="
-# The constant is measured on sample A only: eleven notes, every one separated by
-# silence. It is then applied to every sample. If it ever had to change per file,
-# it would not be a constant and this file would be lying.
+echo "== the ruler's time axis: two samples of one condition =="
+# Gates are in align.js and were fixed before any number was read: coverage 0.9
+# (spoken / notes, on every sample) and reproduction 10 ms (|median_A - median_C|).
+# A constant is then the pooled median over every matched note of both samples,
+# not the average of two medians.
 if [ "$HAVE_PYIN" = 1 ] && [ "$HAVE_AUBIO" = 1 ]; then
-  node measure-onset.js truth.json out-localmidi-s2.json out-pyin.json out-aubio.json --json \
-    | sed -n '/^{/,$p' > align.json
+  node align.js --sample truth.json  out-localmidi-s2.json out-pyin.json out-aubio.json \
+                --sample truth3.json build-c/out-localmidi-s2.json build-c/out-pyin.json build-c/out-aubio.json \
+    > align.json
 else
-  say "align" "kept — needs all three engines to measure the constants"
+  say "align" "kept — needs all three engines on both samples"
 fi
 node -e '
 const a=require("./align.json");
+console.log(`  gates: coverage ${a.gates.coverage} (spoken/notes, on every sample) | reproduction ${a.gates.reproduction_ms} ms (|median A - median C|)`);
 for (const r of a.rows) {
-  const status = (a.constants_ms && Object.prototype.hasOwnProperty.call(a.constants_ms, r.tool))
-    ? "constant " + a.constants_ms[r.tool] + " ms"
-    : (a.withheld && a.withheld[r.tool] ? "withheld — " + r.matched + " of " + r.notes_total + " is the denominator" : "none");
-  console.log(`  ${r.tool.padEnd(11)} ${String(r.matched).padStart(2)}/${r.notes_total} (${r.coverage})  median ${String(r.median_ms).padStart(5)} ms  range ${r.min_ms}..${r.max_ms}  ${status}`);
+  const c=a.constants_ms[r.tool], w=a.withheld[r.tool];
+  const verdict = c !== undefined ? `constant ${c>=0?"+":""}${c} ms (pooled)` : "withheld";
+  const per = r.per.map(p => `${String(p.median_ms).padStart(6)} ms on ${p.sample}  (${p.spoken}/${p.notes_total} spoken)`).join(" | ");
+  const spread = r.spread_ms === null ? "n/a" : `${r.spread_ms} ms`;
+  console.log(`  ${r.tool.padEnd(10)} ${verdict.padEnd(24)} ${per}  -> spread ${spread}`);
 }
 '
 cmp_file "align" align.json results/align.json
@@ -126,6 +155,31 @@ if [ "$HAVE_AUBIO" = 1 ]; then
   cmp_file "aubio-sweep" aubio-sweep.tsv results/aubio-sweep.tsv
   cmp_file "aubio-out" out-aubio.json results/out-aubio.json
   cmp_file "score-aubio" score-aubio.json results/score-aubio.json
+fi
+
+echo
+echo "== sample C, scored by the same ruler =="
+node analyze.js localmidi build-c/out-localmidi-s2.json truth3.json build-c | sed 's/^/  /'
+cmp_file "c-localmidi" build-c/out-localmidi-s2.json results/c/out-localmidi-s2.json
+cmp_file "c-score-loc" build-c/score-localmidi.json results/c/score-localmidi.json
+
+if [ "$HAVE_PYIN" = 1 ]; then
+  node analyze.js pyin build-c/out-pyin.json truth3.json build-c | sed 's/^/  /'
+  cmp_file "c-pyin" build-c/out-pyin.json results/c/out-pyin.json
+  cmp_file "c-pyin-frames" build-c/pyin-frames.json results/c/pyin-frames.json
+  cmp_file "c-score-pyin" build-c/score-pyin.json results/c/score-pyin.json
+fi
+
+if [ "$HAVE_AUBIO" = 1 ]; then
+  node analyze.js aubio build-c/out-aubio.json truth3.json build-c | sed 's/^/  /'
+  cmp_file "c-aubio-stder" build-c/aubio-stderr.txt results/c/aubio-stderr.txt
+  cmp_file "c-aubio-sweep" build-c/aubio-sweep.tsv results/c/aubio-sweep.tsv
+  cmp_file "c-aubio-out" build-c/out-aubio.json results/c/out-aubio.json
+  cmp_file "c-score-aubio" build-c/score-aubio.json results/c/score-aubio.json
+  # 11.61 ms is the whole hop that all three engines report onsets on. If pYIN's
+  # two medians differ by exactly one hop, the number was never a fixed offset.
+  node grid.js build-c | sed 's/^/  /'
+  cmp_file "c-onset-grid" build-c/onset-grid.json results/c/onset-grid.json
 fi
 
 node analyze.js localmidi build-b/out-localmidi-s2.json truth2.json build-b | sed 's/^/  /'
@@ -168,7 +222,7 @@ if [ "$HAVE_AUBIO" = 1 ]; then
 fi
 if [ "$HAVE_PYIN" = 1 ] && [ "$HAVE_AUBIO" = 1 ]; then
   node measure-onset.js truth2-90.json build-b90/out-localmidi-s2.json build-b90/out-pyin.json build-b90/out-aubio.json \
-    --json --no-constants | sed -n '/^{/,$p' > build-b90/onset.json
+    --json | sed -n '/^{/,$p' > build-b90/onset.json
   cmp_file "b90-onset" build-b90/onset.json results/b90/onset.json
 fi
 

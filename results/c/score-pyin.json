@@ -1,0 +1,133 @@
+{
+  "counted_notes": 13,
+  "correct": 13,
+  "wrong": 0,
+  "missing": 0,
+  "total_out": 16,
+  "used": 13,
+  "spurious": 0,
+  "glide_out_count": 3,
+  "join_piece_count": 0,
+  "dangling": 0,
+  "join_piece_note": "an output that starts inside a note's join window and answers nothing: one glide cut into two. Neither a duplicate of a truth note (spurious) nor a lost output (dangling) — it is the join being chopped, so it gets its own bucket rather than being forced into either.",
+  "answered_by_spurious": 0,
+  "align_ms": 0,
+  "align_status": "withheld",
+  "merged_outputs": 0,
+  "merged_notes": 0,
+  "solo_notes": 13,
+  "merged_note": "merged is a second axis, not a bucket: it says how the answer was shaped (one output covering two notes), while correct/wrong/missing says whether the pitch was right. A note can be both correct and merged. merged_notes + solo_notes = counted_notes; merged notes are by construction answered, so they can never be missing.",
+  "rows": [
+    {
+      "truth": 57,
+      "at": 0,
+      "got": 57,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 59,
+      "at": 0.68,
+      "got": 59,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 61,
+      "at": 1.36,
+      "got": 61,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 64,
+      "at": 2.02,
+      "got": 64,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 62,
+      "at": 2.96,
+      "got": 62,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 60,
+      "at": 3.61,
+      "got": 60,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 67,
+      "at": 4.46,
+      "got": 67,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 65,
+      "at": 5.3,
+      "got": 65,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 63,
+      "at": 6.01,
+      "got": 63,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 69,
+      "at": 6.76,
+      "got": 69,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 66,
+      "at": 7.66,
+      "got": 66,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 58,
+      "at": 8.5,
+      "got": 58,
+      "verdict": "ok",
+      "merged": false
+    },
+    {
+      "truth": 56,
+      "at": 9.16,
+      "got": 56,
+      "verdict": "ok",
+      "merged": false
+    }
+  ],
+  "hist_out": {
+    "<0.2s": 3,
+    "0.2-0.5s": 0,
+    "0.5-1.0s": 13,
+    ">1.0s": 0
+  },
+  "hist_truth": {
+    "<0.2s": 0,
+    "0.2-0.5s": 0,
+    "0.5-1.0s": 13,
+    ">1.0s": 0
+  },
+  "glide_out": [
+    69,
+    68,
+    67
+  ],
+  "tool": "pyin",
+  "source": "build-c/out-pyin.json",
+  "align_why": "does not reproduce: 0 ms on sample A, -11 ms on sample C — a spread of 11 ms against a 10 ms bar"
+}

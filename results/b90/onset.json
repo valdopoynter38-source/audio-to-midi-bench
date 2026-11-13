@@ -1,53 +1,50 @@
 {
  "measured_on": "truth2-90.json",
  "sample_notes": 30,
- "method": "for each truth note: among the outputs with the same pitch starting within +/-150 ms, take the nearest; delta = out.start - truth.start; report the median",
+ "method": "for each truth note: among the outputs with the same pitch starting within +/-150 ms, take the nearest; delta = out.start - truth.start; report the median. spoken counts the notes that had any output starting within the window, pitch ignored.",
  "rows": [
   {
    "tool": "localmidi",
    "source": "build-b90/out-localmidi-s2.json",
    "notes_total": 30,
+   "spoken": 22,
    "matched": 12,
    "unmatched": 18,
-   "coverage": 0.4,
+   "spoken_share": 0.733,
    "median_ms": 64,
    "p25_ms": 41,
    "p75_ms": 67,
    "min_ms": -11,
-   "max_ms": 79,
-   "within_10ms_of_median": 6,
-   "within_10ms_share": 0.5
+   "max_ms": 79
   },
   {
    "tool": "pyin",
    "source": "build-b90/out-pyin.json",
    "notes_total": 30,
+   "spoken": 29,
    "matched": 29,
    "unmatched": 1,
-   "coverage": 0.9667,
+   "spoken_share": 0.967,
    "median_ms": 82,
    "p25_ms": 68,
    "p75_ms": 89,
    "min_ms": 0,
-   "max_ms": 102,
-   "within_10ms_of_median": 15,
-   "within_10ms_share": 0.517
+   "max_ms": 102
   },
   {
    "tool": "aubio",
    "source": "build-b90/out-aubio.json",
    "notes_total": 30,
+   "spoken": 30,
    "matched": 4,
    "unmatched": 26,
-   "coverage": 0.1333,
+   "spoken_share": 1,
    "median_ms": 61,
    "p25_ms": 59,
    "p75_ms": 61,
    "min_ms": 58,
-   "max_ms": 61,
-   "within_10ms_of_median": 4,
-   "within_10ms_share": 1
+   "max_ms": 61
   }
  ],
- "note": "readings only: this sample has joins, so a number here describes how this engine behaves on this file. It is not a constant and must not be fed to align.json."
+ "note": "readings only. A single sample, or a subset a tool chose to answer, is a point, not a constant: it goes into align.json only if a second sample of the same condition reproduces it."
 }

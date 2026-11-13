@@ -64,11 +64,13 @@ function parseMidi(path) {
 function score(truth, notesRaw, alignMs, alignStatus) {
   // --- the ruler's time axis is aligned before anything is compared ---------
   // Every engine reports its onsets with a fixed offset, and that offset is a
-  // property of the engine, not of the recording. It is measured once, on the
-  // sample where silence makes "where does this note start" unambiguous
-  // (measure-onset.js on melody.wav), stored in align.json, and applied here to
-  // every sample. Nothing is aligned per file: if this constant had to change
-  // when the sample changed, it would not be a constant and must not be used.
+  // property of the engine, not of the recording — but only if a second sample of
+  // the same condition says so. align.js measures it on two samples where
+  // silence makes "where does this note start" unambiguous (melody.wav and
+  // melody3.wav: different note count, different gaps, different glide) and
+  // writes it to align.json only if both agree within 10 ms. One sample measures
+  // this file's reading, not the engine. Nothing is aligned per file: a constant
+  // that had to change when the sample changed is not a constant.
   const shift = (alignMs || 0) / 1000;
   const notes = notesRaw.map(n => ({
     ...n, start: +(n.start - shift).toFixed(6), end: +(n.end - shift).toFixed(6),
@@ -369,12 +371,13 @@ const file = process.argv[3];
 const notes = file.endsWith('.mid') ? parseMidi(file) : JSON.parse(fs.readFileSync(file, 'utf8')).notes;
 
 // 对齐常数只有一个来源：align.json。没有它就不对齐（0），也不猜。
-// 三种状态必须分开写：'constant' 是真扣了常数，'withheld' 是量了但不许扣
-// （中位数是工具自己挑的那几条算出来的），'none' 是 align.json 里根本没有这个引擎。
-// 把 withheld 写成 align_ms: 0 会让读者以为「量出来是 0」——那是另一个物件。
+// 三种状态必须分开写：'constant' 是过了两道闸、真扣了常数；'withheld' 是量了但
+// 不许扣（分母是工具自己挑的，或者第二个样本不认这个数）；'none' 是 align.json
+// 里根本没有这个引擎。把 withheld 写成 align_ms: 0 会让读者以为「量出来是 0」
+// —— 那是另一个物件。所以 withheld 必须把 align.json 记下的理由带出来。
 const path = require('path');
 const alignPath = path.join(__dirname, 'align.json');
-let alignMs = 0, alignStatus = 'none';
+let alignMs = 0, alignStatus = 'none', alignWhy = null;
 if (fs.existsSync(alignPath)) {
   const a = JSON.parse(fs.readFileSync(alignPath, 'utf8'));
   const base = tool.replace(/-js$/, '');          // localmidi-js 和 localmidi 是同一把尺子
@@ -383,18 +386,20 @@ if (fs.existsSync(alignPath)) {
     alignStatus = 'constant';
   } else if (a.withheld && a.withheld[base]) {
     alignStatus = 'withheld';
+    alignWhy = (a.withheld[base].why || '').split('. ')[0].replace(/\.$/, '');
   }
 }
 const r = score(truth, notes, alignMs, alignStatus);
 r.tool = tool;
 r.source = file;
+if (alignWhy) r.align_why = alignWhy;
 const outDir = process.argv[5] || '.';   // sample B writes into its own dir
 fs.writeFileSync(require('path').join(outDir, `score-${tool}.json`), JSON.stringify(r, null, 2));
 console.log(`\n== ${tool} (${file}) ==`);
 if (r.align_status === 'withheld') {
-  console.log(`align     no shift — align.json withholds a constant for this engine: its median was read off the notes it chose to answer, so subtracting it would calibrate the ruler on that choice`);
+  console.log(`align     no shift — align.json withholds a constant for this engine: ${r.align_why || 'see align.json'}`);
 } else if (r.align_status === 'constant') {
-  console.log(`align     ${r.align_ms >= 0 ? '+' : ''}${r.align_ms} ms removed from every onset (align.json, measured on sample A)`);
+  console.log(`align     ${r.align_ms >= 0 ? '+' : ''}${r.align_ms} ms removed from every onset (align.json, reproduced on two samples)`);
 } else {
   console.log(`align     no shift (align.json has no constant for this engine)`);
 }

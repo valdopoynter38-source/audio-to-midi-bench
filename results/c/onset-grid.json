@@ -1,0 +1,98 @@
+{
+ "sample_rate": 44100,
+ "candidates_samples": [
+  1024,
+  512,
+  256,
+  128,
+  64
+ ],
+ "rounding_ms": 1,
+ "why": "A reported onset is a frame index times a hop, so no onset can land between two lattice points. A \"constant\" read off a lattice is only defined to its hop: if two samples of the same condition come out one hop apart, the number is where the notes fell in the file, not a property of the engine.",
+ "files": [
+  {
+   "sample": "A",
+   "tool": "localmidi",
+   "file": "out-localmidi-s2.json",
+   "notes": 13,
+   "hop_samples": 256,
+   "hop_ms": 5.8,
+   "max_residual_ms": 0.48,
+   "on_a_lattice": true
+  },
+  {
+   "sample": "A",
+   "tool": "pyin",
+   "file": "out-pyin.json",
+   "notes": 14,
+   "hop_samples": 512,
+   "hop_ms": 11.61,
+   "max_residual_ms": 0.48,
+   "on_a_lattice": true
+  },
+  {
+   "sample": "A",
+   "tool": "aubio",
+   "file": "out-aubio.json",
+   "notes": 7,
+   "hop_samples": 256,
+   "hop_ms": 5.8,
+   "max_residual_ms": 0.49,
+   "on_a_lattice": true
+  },
+  {
+   "sample": "C",
+   "tool": "localmidi",
+   "file": "build-c\\out-localmidi-s2.json",
+   "notes": 15,
+   "hop_samples": 256,
+   "hop_ms": 5.8,
+   "max_residual_ms": 0.46,
+   "on_a_lattice": true
+  },
+  {
+   "sample": "C",
+   "tool": "pyin",
+   "file": "build-c\\out-pyin.json",
+   "notes": 16,
+   "hop_samples": 512,
+   "hop_ms": 11.61,
+   "max_residual_ms": 0.47,
+   "on_a_lattice": true
+  },
+  {
+   "sample": "C",
+   "tool": "aubio",
+   "file": "build-c\\out-aubio.json",
+   "notes": 10,
+   "hop_samples": 256,
+   "hop_ms": 5.8,
+   "max_residual_ms": 0.42,
+   "on_a_lattice": true
+  }
+ ],
+ "medians": {
+  "aubio": {
+   "A_ms": 57,
+   "C_ms": 53,
+   "difference_ms": 4,
+   "engine_hop_ms": 5.8,
+   "difference_in_hops": 0.69
+  },
+  "localmidi": {
+   "A_ms": -11,
+   "C_ms": -13,
+   "difference_ms": 2,
+   "engine_hop_ms": 5.8,
+   "difference_in_hops": 0.34
+  },
+  "pyin": {
+   "A_ms": 0,
+   "C_ms": -11,
+   "difference_ms": 11,
+   "engine_hop_ms": 11.61,
+   "difference_in_hops": 0.95
+  }
+ },
+ "note": "hop_samples is the finest hop that explains every start in the file within rounding. It describes the ruler and is not a correction: nothing here is added to any onset."
+}

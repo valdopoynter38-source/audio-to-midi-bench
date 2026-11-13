@@ -341,5 +341,6 @@
     "pitch_offset_note": "best single offset such that the truth pitch curve at (output.start + offset) reproduces the pitch this engine reported; measured from the raw, unaligned onset; scanned -200..+80 ms in 10 ms steps"
   },
   "tool": "aubio",
-  "source": "build-b/out-aubio.json"
+  "source": "build-b/out-aubio.json",
+  "align_why": "spoke about only 7 of 11 notes on sample A"
 }

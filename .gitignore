@@ -3,6 +3,7 @@
 !truth.json
 !truth2.json
 !truth2-90.json
+!truth3.json
 !align.json
 /*.tsv
 __pycache__/
@@ -15,3 +16,6 @@ aubio/
 /build-b/
 /build-b90/
 /build-90/
+# sample C is generated into its own dir; the committed copies live in results/c/
+/build-c/
+/build-verify.log

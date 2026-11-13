@@ -1,71 +1,106 @@
 {
- "measured_on": "truth.json",
- "sample_notes": 11,
- "method": "for each truth note: among the outputs with the same pitch starting within +/-150 ms, take the nearest; delta = out.start - truth.start; report the median",
- "rows": [
-  {
-   "tool": "localmidi",
-   "source": "out-localmidi-s2.json",
-   "notes_total": 11,
-   "matched": 10,
-   "unmatched": 1,
-   "coverage": 0.9091,
-   "median_ms": -11,
-   "p25_ms": -14,
-   "p75_ms": -10,
-   "min_ms": -14,
-   "max_ms": 0,
-   "within_10ms_of_median": 9,
-   "within_10ms_share": 0.9
-  },
-  {
-   "tool": "pyin",
-   "source": "out-pyin.json",
-   "notes_total": 11,
-   "matched": 11,
-   "unmatched": 0,
-   "coverage": 1,
-   "median_ms": 0,
-   "p25_ms": -1,
-   "p75_ms": 4,
-   "min_ms": -8,
-   "max_ms": 14,
-   "within_10ms_of_median": 10,
-   "within_10ms_share": 0.909
-  },
-  {
-   "tool": "aubio",
-   "source": "out-aubio.json",
-   "notes_total": 11,
-   "matched": 6,
-   "unmatched": 5,
-   "coverage": 0.5455,
-   "median_ms": 57,
-   "p25_ms": 54,
-   "p75_ms": 58,
-   "min_ms": 52,
-   "max_ms": 60,
-   "within_10ms_of_median": 6,
-   "within_10ms_share": 1
-  }
- ],
- "why_this_file": "silence is the only place where \"the note starts here\" is not a matter of opinion, so the constant is read off the one sample where a join cannot bias it",
- "caveat": "a constant read off this file and applied to every file is a ruler, not a correction: if it had to change when the sample changed, it would not be constant",
- "coverage_gate": {
-  "threshold": 0.9,
-  "rule": "a constant is emitted only if the matched notes are essentially the whole sample; otherwise the denominator is the tool's selection and the reading goes to `withheld`",
-  "also": "within_10ms_of_median in every row is arithmetic, not evidence: the median is computed from those same matched notes, so with four of them it cannot fail. It is printed for description and must not be quoted as proof that an offset is constant."
+ "method": "per truth note: among the outputs with the same pitch starting within +/-150 ms, take the nearest; delta = out.start - truth.start. A constant must (1) come from a set the tool did not choose — it spoke about >= 0.9 of the notes on every sample — and (2) reproduce on a second sample of the same condition within 10 ms.",
+ "gates": {
+  "coverage": 0.9,
+  "reproduction_ms": 10
  },
  "constants_ms": {
-  "localmidi": -11,
-  "pyin": 0
+  "localmidi": -13
  },
  "withheld": {
   "aubio": {
-   "median_ms": 57,
-   "matched": 6,
-   "notes_total": 11,
-   "why": "the median is taken over the 6 notes this engine chose to answer (5 it said nothing about), so it is a property of the selection as much as of the engine. Subtracting it would calibrate the ruler on the engine's own choice of which notes to report — the sample-tuning mistake moved one step left. The reading stays for description; the time axis is not shifted by it."
+   "per_sample_ms": {
+    "A": 57,
+    "C": 53
+   },
+   "why": "spoke about only 7 of 11 notes on sample A. The median is taken over the notes this engine chose to answer, so it describes the selection as much as the engine. Subtracting it would calibrate the ruler on the engine's own choice of which notes to report."
+  },
+  "pyin": {
+   "per_sample_ms": {
+    "A": 0,
+    "C": -11
+   },
+   "why": "does not reproduce: 0 ms on sample A, -11 ms on sample C — a spread of 11 ms against a 10 ms bar. One sample cannot tell a fixed offset from this file's reading, and a second sample of the same condition disagrees, so there is no constant to subtract."
   }
- }
+ },
+ "samples": [
+  {
+   "sample": "A",
+   "file": "truth.json",
+   "notes_total": 11
+  },
+  {
+   "sample": "C",
+   "file": "truth3.json",
+   "notes_total": 13
+  }
+ ],
+ "rows": [
+  {
+   "tool": "aubio",
+   "per": [
+    {
+     "sample": "A",
+     "file": "truth.json",
+     "spoken": 7,
+     "notes_total": 11,
+     "median_ms": 57
+    },
+    {
+     "sample": "C",
+     "file": "truth3.json",
+     "spoken": 9,
+     "notes_total": 13,
+     "median_ms": 53
+    }
+   ],
+   "spread_ms": 4,
+   "cover_ok": false,
+   "reproduce_ok": true
+  },
+  {
+   "tool": "localmidi",
+   "per": [
+    {
+     "sample": "A",
+     "file": "truth.json",
+     "spoken": 11,
+     "notes_total": 11,
+     "median_ms": -11
+    },
+    {
+     "sample": "C",
+     "file": "truth3.json",
+     "spoken": 13,
+     "notes_total": 13,
+     "median_ms": -13
+    }
+   ],
+   "spread_ms": 2,
+   "cover_ok": true,
+   "reproduce_ok": true
+  },
+  {
+   "tool": "pyin",
+   "per": [
+    {
+     "sample": "A",
+     "file": "truth.json",
+     "spoken": 11,
+     "notes_total": 11,
+     "median_ms": 0
+    },
+    {
+     "sample": "C",
+     "file": "truth3.json",
+     "spoken": 13,
+     "notes_total": 13,
+     "median_ms": -11
+    }
+   ],
+   "spread_ms": 11,
+   "cover_ok": true,
+   "reproduce_ok": false
+  }
+ ]
 }
