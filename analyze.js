@@ -61,7 +61,7 @@ function parseMidi(path) {
   return notes.sort((a, b2) => a.start - b2.start);
 }
 
-function score(truth, notesRaw, alignMs) {
+function score(truth, notesRaw, alignMs, alignStatus) {
   // --- the ruler's time axis is aligned before anything is compared ---------
   // Every engine reports its onsets with a fixed offset, and that offset is a
   // property of the engine, not of the recording. It is measured once, on the
@@ -204,6 +204,7 @@ function score(truth, notesRaw, alignMs) {
       + "than being forced into either.",
     answered_by_spurious: answeredBySpurious,        // 有多少条真值音是被一个 spurious 输出答的
     align_ms: alignMs || 0,                          // 时间轴对齐常数，见 align.json
+    align_status: alignStatus || 'none',             // 'constant' | 'withheld' | 'none'（0 不等于「量出来是 0」）
     merged_outputs: mergedOut.size,                  // 覆盖 ≥2 条真值音的输出个数
     merged_notes: mergedNotes,                       // 被这种输出覆盖的真值音条数
     solo_notes: truthTotal - mergedNotes,            // merged_notes + solo_notes = counted_notes
@@ -313,7 +314,7 @@ function score(truth, notesRaw, alignMs) {
     for (const [s, i] of pairs) {
       const t = truth.notes[i];
       const g = Math.round((t.glide_in || 0) * 1000);
-      const e = byGlide.get(g) || { glide_ms: g, notes: 0, correct: 0, sum_err: 0 };
+      const e = byGlide.get(g) || { glide_ms: g, notes: 0, correct: 0, sum_err: 0, sum_model: 0, modeled: 0 };
       e.notes++;
       if (notes[s].pitch === t.pitch) e.correct++;
       e.sum_err += notes[s].pitch - t.pitch;
@@ -368,26 +369,45 @@ const file = process.argv[3];
 const notes = file.endsWith('.mid') ? parseMidi(file) : JSON.parse(fs.readFileSync(file, 'utf8')).notes;
 
 // 对齐常数只有一个来源：align.json。没有它就不对齐（0），也不猜。
+// 三种状态必须分开写：'constant' 是真扣了常数，'withheld' 是量了但不许扣
+// （中位数是工具自己挑的那几条算出来的），'none' 是 align.json 里根本没有这个引擎。
+// 把 withheld 写成 align_ms: 0 会让读者以为「量出来是 0」——那是另一个物件。
 const path = require('path');
 const alignPath = path.join(__dirname, 'align.json');
-let alignMs = 0;
+let alignMs = 0, alignStatus = 'none';
 if (fs.existsSync(alignPath)) {
   const a = JSON.parse(fs.readFileSync(alignPath, 'utf8'));
   const base = tool.replace(/-js$/, '');          // localmidi-js 和 localmidi 是同一把尺子
-  alignMs = (a.constants_ms && a.constants_ms[base]) || 0;
+  if (a.constants_ms && Object.prototype.hasOwnProperty.call(a.constants_ms, base)) {
+    alignMs = a.constants_ms[base];
+    alignStatus = 'constant';
+  } else if (a.withheld && a.withheld[base]) {
+    alignStatus = 'withheld';
+  }
 }
-const r = score(truth, notes, alignMs);
+const r = score(truth, notes, alignMs, alignStatus);
 r.tool = tool;
 r.source = file;
 const outDir = process.argv[5] || '.';   // sample B writes into its own dir
 fs.writeFileSync(require('path').join(outDir, `score-${tool}.json`), JSON.stringify(r, null, 2));
 console.log(`\n== ${tool} (${file}) ==`);
-console.log(`align     ${r.align_ms >= 0 ? '+' : ''}${r.align_ms} ms removed from every onset (align.json, measured on sample A)`);
+if (r.align_status === 'withheld') {
+  console.log(`align     no shift — align.json withholds a constant for this engine: its median was read off the notes it chose to answer, so subtracting it would calibrate the ruler on that choice`);
+} else if (r.align_status === 'constant') {
+  console.log(`align     ${r.align_ms >= 0 ? '+' : ''}${r.align_ms} ms removed from every onset (align.json, measured on sample A)`);
+} else {
+  console.log(`align     no shift (align.json has no constant for this engine)`);
+}
 console.log(`truth     ${r.counted_notes} notes -> correct ${r.correct} | wrong ${r.wrong} | missing ${r.missing}   (${r.correct}+${r.wrong}+${r.missing} = ${r.counted_notes})`);
 console.log(`outputs   ${r.total_out} notes -> used ${r.used} | spurious ${r.spurious} | glide ${r.glide_out_count} | join pieces ${r.join_piece_count} | dangling ${r.dangling}   (${r.used}+${r.spurious}+${r.glide_out_count}+${r.join_piece_count}+${r.dangling} = ${r.total_out})`);
 console.log(`merged    ${r.merged_outputs} output(s) each cover 2+ truth notes, ${r.merged_notes} note(s) merged | ${r.merged_notes}+${r.solo_notes} = ${r.counted_notes}   (a second axis, not a bucket)`);
 if (r.answered_by_spurious) console.log(`          ${r.answered_by_spurious} truth note(s) answered by an output also counted spurious`);
-if (r.join) console.log(`joins     onset raw ${r.join.onset_raw_median_ms >= 0 ? '+' : ''}${r.join.onset_raw_median_ms} ms -> aligned ${r.join.onset_aligned_median_ms >= 0 ? '+' : ''}${r.join.onset_aligned_median_ms} ms  (${r.join.onset_matched}/${r.counted_notes} notes paired, same rule as measure-onset.js) | ${r.join.distinct_outputs_answering} outputs answer ${r.join.notes_with_an_answer} notes`);
+if (r.join) {
+  const aligned = r.align_status === 'constant'
+    ? `-> aligned ${r.join.onset_aligned_median_ms >= 0 ? '+' : ''}${r.join.onset_aligned_median_ms} ms`
+    : `(not shifted: ${r.align_status})`;
+  console.log(`joins     onset raw ${r.join.onset_raw_median_ms >= 0 ? '+' : ''}${r.join.onset_raw_median_ms} ms ${aligned}  (${r.join.onset_matched}/${r.counted_notes} notes paired, same rule as measure-onset.js) | ${r.join.distinct_outputs_answering} outputs answer ${r.join.notes_with_an_answer} notes`);
+}
 if (r.pitch_error) console.log(`pitch err steady ${r.pitch_error.steady_median_abs_cents} cents (n=${r.pitch_error.steady_notes}) | vibrato ${r.pitch_error.vibrato_median_abs_cents} cents (n=${r.pitch_error.vibrato_notes}) — reported apart, never averaged together`);
 for (const row of r.rows) console.log(`  truth ${row.truth} @${row.at}s -> ${row.got === null ? 'none' : row.got}  ${row.verdict}${row.merged ? '  [merged]' : ''}`);
 console.log('  glide:', r.glide_out.join(','));

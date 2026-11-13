@@ -11,7 +11,10 @@
 # The order is the point: run the engines, then measure the ruler's alignment
 # constant on the one sample where silence makes the answer unambiguous, then
 # score. Scoring before aligning would compare two time axes that are known to
-# be offset by ~58 ms, and every join measurement downstream would inherit it.
+# be offset by tens of milliseconds, and every join measurement downstream would
+# inherit it. The constant is only emitted for an engine that answered that
+# sample more or less in full: a median taken over the notes a tool chose to
+# report is that tool's selection, not a property of the ruler.
 
 set -u
 cd "$(dirname "$0")" || exit 1
@@ -94,7 +97,12 @@ else
 fi
 node -e '
 const a=require("./align.json");
-for (const r of a.rows) console.log(`  ${r.tool.padEnd(11)} ${String(r.median_ms).padStart(6)} ms  (${r.matched}/${r.notes_total} notes matched, ${r.within_10ms_of_median} of those within 10 ms of it)`);
+for (const r of a.rows) {
+  const status = (a.constants_ms && Object.prototype.hasOwnProperty.call(a.constants_ms, r.tool))
+    ? "constant " + a.constants_ms[r.tool] + " ms"
+    : (a.withheld && a.withheld[r.tool] ? "withheld — " + r.matched + " of " + r.notes_total + " is the denominator" : "none");
+  console.log(`  ${r.tool.padEnd(11)} ${String(r.matched).padStart(2)}/${r.notes_total} (${r.coverage})  median ${String(r.median_ms).padStart(5)} ms  range ${r.min_ms}..${r.max_ms}  ${status}`);
+}
 '
 cmp_file "align" align.json results/align.json
 

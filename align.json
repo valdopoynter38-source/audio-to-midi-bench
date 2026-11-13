@@ -9,9 +9,12 @@
    "notes_total": 11,
    "matched": 10,
    "unmatched": 1,
+   "coverage": 0.9091,
    "median_ms": -11,
    "p25_ms": -14,
    "p75_ms": -10,
+   "min_ms": -14,
+   "max_ms": 0,
    "within_10ms_of_median": 9,
    "within_10ms_share": 0.9
   },
@@ -21,9 +24,12 @@
    "notes_total": 11,
    "matched": 11,
    "unmatched": 0,
+   "coverage": 1,
    "median_ms": 0,
    "p25_ms": -1,
    "p75_ms": 4,
+   "min_ms": -8,
+   "max_ms": 14,
    "within_10ms_of_median": 10,
    "within_10ms_share": 0.909
   },
@@ -33,18 +39,33 @@
    "notes_total": 11,
    "matched": 6,
    "unmatched": 5,
+   "coverage": 0.5455,
    "median_ms": 57,
    "p25_ms": 54,
    "p75_ms": 58,
+   "min_ms": 52,
+   "max_ms": 60,
    "within_10ms_of_median": 6,
    "within_10ms_share": 1
   }
  ],
  "why_this_file": "silence is the only place where \"the note starts here\" is not a matter of opinion, so the constant is read off the one sample where a join cannot bias it",
  "caveat": "a constant read off this file and applied to every file is a ruler, not a correction: if it had to change when the sample changed, it would not be constant",
+ "coverage_gate": {
+  "threshold": 0.9,
+  "rule": "a constant is emitted only if the matched notes are essentially the whole sample; otherwise the denominator is the tool's selection and the reading goes to `withheld`",
+  "also": "within_10ms_of_median in every row is arithmetic, not evidence: the median is computed from those same matched notes, so with four of them it cannot fail. It is printed for description and must not be quoted as proof that an offset is constant."
+ },
  "constants_ms": {
   "localmidi": -11,
-  "pyin": 0,
-  "aubio": 57
+  "pyin": 0
+ },
+ "withheld": {
+  "aubio": {
+   "median_ms": 57,
+   "matched": 6,
+   "notes_total": 11,
+   "why": "the median is taken over the 6 notes this engine chose to answer (5 it said nothing about), so it is a property of the selection as much as of the engine. Subtracting it would calibrate the ruler on the engine's own choice of which notes to report — the sample-tuning mistake moved one step left. The reading stays for description; the time axis is not shifted by it."
+  }
  }
 }

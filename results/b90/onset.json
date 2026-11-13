@@ -9,9 +9,12 @@
    "notes_total": 30,
    "matched": 12,
    "unmatched": 18,
+   "coverage": 0.4,
    "median_ms": 64,
    "p25_ms": 41,
    "p75_ms": 67,
+   "min_ms": -11,
+   "max_ms": 79,
    "within_10ms_of_median": 6,
    "within_10ms_share": 0.5
   },
@@ -21,9 +24,12 @@
    "notes_total": 30,
    "matched": 29,
    "unmatched": 1,
+   "coverage": 0.9667,
    "median_ms": 82,
    "p25_ms": 68,
    "p75_ms": 89,
+   "min_ms": 0,
+   "max_ms": 102,
    "within_10ms_of_median": 15,
    "within_10ms_share": 0.517
   },
@@ -33,9 +39,12 @@
    "notes_total": 30,
    "matched": 4,
    "unmatched": 26,
+   "coverage": 0.1333,
    "median_ms": 61,
    "p25_ms": 59,
    "p75_ms": 61,
+   "min_ms": 58,
+   "max_ms": 61,
    "within_10ms_of_median": 4,
    "within_10ms_share": 1
   }

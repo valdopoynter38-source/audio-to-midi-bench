@@ -55,28 +55,43 @@ for (const path of outPaths) {
   }
   const med = deltas.length ? q(deltas, 0.5) : null;
   const near = med === null ? 0 : deltas.filter(d => Math.abs(d - med) <= 10).length;
+  const coverage = deltas.length / truth.notes.length;
   rows.push({
     tool,
     source: path,
     notes_total: truth.notes.length,
     matched: deltas.length,
     unmatched,
+    coverage: round1(coverage * 1000) / 1000,
     median_ms: med === null ? null : round1(med),
     p25_ms: deltas.length ? round1(q(deltas, 0.25)) : null,
     p75_ms: deltas.length ? round1(q(deltas, 0.75)) : null,
+    min_ms: deltas.length ? round1(q(deltas, 0)) : null,
+    max_ms: deltas.length ? round1(q(deltas, 1)) : null,
     within_10ms_of_median: near,
     within_10ms_share: deltas.length ? round1(near / deltas.length * 100) / 100 : null,
   });
 }
 
+// A constant of the ruler has to be measured on a set the tool did not choose.
+// If an engine answers 6 of 11 notes, the median is taken over the 6 it decided
+// to speak about; subtracting it from what the same engine does elsewhere is
+// calibrating the ruler on that engine's selection, which is the same mistake as
+// tuning the sample until the offset disappears — moved one step to the left.
+// So a constant is emitted only when the matched notes are essentially the whole
+// sample. The bar is not a threshold to argue about, it is the statement "the
+// denominator is the file, not the tool".
+const COVERAGE_FOR_CONSTANT = 0.9;
+
 console.log(`\ntruth: ${truthPath}  (${truth.notes.length} notes)`);
-console.log('tool          matched  median   p25    p75   within +/-10ms of median');
+console.log('tool          matched/total  cover  median   p25    p75    min    max   constant');
 for (const r of rows) {
   if (r.median_ms === null) { console.log(`${r.tool.padEnd(13)} ${r.matched}/${r.notes_total}   no match`); continue; }
+  const gate = r.coverage >= COVERAGE_FOR_CONSTANT ? 'read' : 'withheld (denominator is the tool)';
   console.log(
-    `${r.tool.padEnd(13)} ${String(r.matched).padStart(2)}/${r.notes_total}    ` +
-    `${String(r.median_ms).padStart(6)}  ${String(r.p25_ms).padStart(5)}  ${String(r.p75_ms).padStart(5)}   ` +
-    `${r.within_10ms_of_median}/${r.matched} (${r.within_10ms_share})`
+    `${r.tool.padEnd(13)} ${String(r.matched).padStart(2)}/${r.notes_total}          ` +
+    `${r.coverage.toFixed(2)}  ${String(r.median_ms).padStart(6)}  ${String(r.p25_ms).padStart(5)}  ${String(r.p75_ms).padStart(5)}  ` +
+    `${String(r.min_ms).padStart(5)}  ${String(r.max_ms).padStart(5)}   ${gate}`
   );
 }
 if (process.argv.includes('--json')) {
@@ -92,16 +107,39 @@ if (process.argv.includes('--json')) {
   // this on a joined sample produces a reading, not a constant, so the field is
   // omitted rather than optional-but-tempting.
   if (!process.argv.includes('--no-constants')) {
-    const constants = {};
+    const constants = {}, withheld = {};
     for (const r of rows) {
+      const name = r.tool.replace(/-js$/, '');
       if (r.median_ms === null) continue;
-      constants[r.tool.replace(/-js$/, '')] = r.median_ms;
+      if (r.coverage >= COVERAGE_FOR_CONSTANT) {
+        constants[name] = r.median_ms;
+      } else {
+        withheld[name] = {
+          median_ms: r.median_ms,
+          matched: r.matched,
+          notes_total: r.notes_total,
+          why: 'the median is taken over the ' + r.matched + ' notes this engine chose to answer ('
+            + r.unmatched + ' it said nothing about), so it is a property of the selection as much '
+            + 'as of the engine. Subtracting it would calibrate the ruler on the engine\'s own '
+            + 'choice of which notes to report — the sample-tuning mistake moved one step left. '
+            + 'The reading stays for description; the time axis is not shifted by it.',
+        };
+      }
     }
     doc.why_this_file = 'silence is the only place where "the note starts here" is not a matter '
       + 'of opinion, so the constant is read off the one sample where a join cannot bias it';
     doc.caveat = 'a constant read off this file and applied to every file is a ruler, not a '
       + 'correction: if it had to change when the sample changed, it would not be constant';
+    doc.coverage_gate = {
+      threshold: COVERAGE_FOR_CONSTANT,
+      rule: 'a constant is emitted only if the matched notes are essentially the whole sample; '
+        + 'otherwise the denominator is the tool\'s selection and the reading goes to `withheld`',
+      also: 'within_10ms_of_median in every row is arithmetic, not evidence: the median is '
+        + 'computed from those same matched notes, so with four of them it cannot fail. It is '
+        + 'printed for description and must not be quoted as proof that an offset is constant.',
+    };
     doc.constants_ms = constants;
+    doc.withheld = withheld;
   } else {
     doc.note = 'readings only: this sample has joins, so a number here describes how this '
       + 'engine behaves on this file. It is not a constant and must not be fed to align.json.';

@@ -12,6 +12,7 @@
   "join_piece_note": "an output that starts inside a note's join window and answers nothing: one glide cut into two. Neither a duplicate of a truth note (spurious) nor a lost output (dangling) — it is the join being chopped, so it gets its own bucket rather than being forced into either.",
   "answered_by_spurious": 0,
   "align_ms": -11,
+  "align_status": "constant",
   "merged_outputs": 7,
   "merged_notes": 15,
   "solo_notes": 15,
