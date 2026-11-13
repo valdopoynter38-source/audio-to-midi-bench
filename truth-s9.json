@@ -1,0 +1,100 @@
+{
+ "file": "melody-s9.wav",
+ "sample_rate": 44100,
+ "duration": 10.385,
+ "notes": [
+  {
+   "pitch": 76,
+   "start": 0.0,
+   "end": 0.729,
+   "kind": "plain"
+  },
+  {
+   "pitch": 74,
+   "start": 0.789,
+   "end": 1.396,
+   "kind": "plain"
+  },
+  {
+   "pitch": 83,
+   "start": 1.456,
+   "end": 2.097,
+   "kind": "plain"
+  },
+  {
+   "pitch": 73,
+   "start": 2.157,
+   "end": 2.807,
+   "kind": "plain"
+  },
+  {
+   "pitch": 79,
+   "start": 2.867,
+   "end": 3.482,
+   "kind": "plain"
+  },
+  {
+   "pitch": 84,
+   "start": 3.542,
+   "end": 4.265,
+   "kind": "plain"
+  },
+  {
+   "pitch": 77,
+   "start": 4.325,
+   "end": 5.076,
+   "kind": "plain"
+  },
+  {
+   "pitch": 85,
+   "start": 5.276,
+   "end": 5.944,
+   "kind": "plain"
+  },
+  {
+   "pitch": 72,
+   "start": 6.004,
+   "end": 6.625,
+   "kind": "plain"
+  },
+  {
+   "pitch": 86,
+   "start": 6.685,
+   "end": 7.269,
+   "kind": "plain"
+  },
+  {
+   "pitch": 78,
+   "start": 7.329,
+   "end": 8.101,
+   "kind": "plain"
+  },
+  {
+   "pitch": 82,
+   "start": 8.301,
+   "end": 9.04,
+   "kind": "plain"
+  },
+  {
+   "pitch": 75,
+   "start": 9.1,
+   "end": 9.885,
+   "kind": "plain"
+  }
+ ],
+ "glide": {
+  "from": 76,
+  "to": 74,
+  "start": 9.885,
+  "end": 10.185,
+  "note": "two defensible answers, excluded from error count"
+ },
+ "counted_notes": 13,
+ "kind": "plain",
+ "params": {
+  "kind": "plain",
+  "register": "high",
+  "glide_ms": 300
+ },
+ "why": "one of nine samples of one condition (silence between every note). This one varies only the material: plain, register high, glide 300 ms."
+}

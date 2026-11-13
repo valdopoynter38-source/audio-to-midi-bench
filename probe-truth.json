@@ -1,0 +1,35 @@
+{
+ "file": "probe.wav",
+ "sample_rate": 44100,
+ "duration": 2.4,
+ "notes": [
+  {
+   "pitch": 60,
+   "start": 0.5,
+   "end": 0.75
+  },
+  {
+   "pitch": 60,
+   "start": 0.852902,
+   "end": 1.102902
+  },
+  {
+   "pitch": 60,
+   "start": 1.205805,
+   "end": 1.455805
+  },
+  {
+   "pitch": 60,
+   "start": 1.558707,
+   "end": 1.808707
+  },
+  {
+   "pitch": 60,
+   "start": 1.91161,
+   "end": 2.16161
+  }
+ ],
+ "glide": null,
+ "counted_notes": 5,
+ "why": "one pitch, one envelope, five onsets a quarter of a 512-sample hop apart. Used only to separate a lattice convention from an analysis delay; not a sample for scoring."
+}

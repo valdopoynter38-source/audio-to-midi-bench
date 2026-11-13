@@ -1,0 +1,164 @@
+{
+ "localmidi": {
+  "hop_samples": 256,
+  "hop_ms": 5.8,
+  "frame_samples": 1024,
+  "reported": "frame first sample (offset / sampleRate)",
+  "frame_centre_ms": -11.6,
+  "probe_deltas_ms": [
+   -12,
+   -10.9,
+   -9.8,
+   -14.7,
+   -13.6
+  ],
+  "probe_median_ms": -12,
+  "probe_band_ms": 4.9,
+  "probe_rows": [
+   {
+    "truth_s": 0.5,
+    "phase_samples": 34,
+    "out_s": 0.488,
+    "out_pitch": 61,
+    "delta_ms": -12
+   },
+   {
+    "truth_s": 0.852902,
+    "phase_samples": 237,
+    "out_s": 0.842,
+    "out_pitch": 60,
+    "delta_ms": -10.9
+   },
+   {
+    "truth_s": 1.205805,
+    "phase_samples": 440,
+    "out_s": 1.196,
+    "out_pitch": 60,
+    "delta_ms": -9.8
+   },
+   {
+    "truth_s": 1.558707,
+    "phase_samples": 131,
+    "out_s": 1.544,
+    "out_pitch": 60,
+    "delta_ms": -14.7
+   },
+   {
+    "truth_s": 1.91161,
+    "phase_samples": 334,
+    "out_s": 1.898,
+    "out_pitch": 60,
+    "delta_ms": -13.6
+   }
+  ],
+  "note": "Reports the first sample of a 1024-sample frame. The centre of that frame is 11.6 ms later, so -11.6 ms of any constant is the frame-centre convention (discrete, one 5.81 ms hop wide) and the remainder is where inside the frame the RMS crosses threshold. Probe: median -12 ms, band 4.9 ms over five phases — the band is smaller than a hop, which is what a lattice looks like."
+ },
+ "pyin": {
+  "hop_samples": 512,
+  "hop_ms": 11.6,
+  "frame_samples": 2048,
+  "reported": "frame centre (librosa frames_to_time, center=True)",
+  "frame_centre_ms": 0,
+  "probe_deltas_ms": [
+   -1,
+   -4.9,
+   -9.8,
+   -14.7,
+   -7.6
+  ],
+  "probe_median_ms": -7.6,
+  "probe_band_ms": 13.7,
+  "probe_rows": [
+   {
+    "truth_s": 0.5,
+    "phase_samples": 34,
+    "out_s": 0.499,
+    "out_pitch": 60,
+    "delta_ms": -1
+   },
+   {
+    "truth_s": 0.852902,
+    "phase_samples": 237,
+    "out_s": 0.848,
+    "out_pitch": 60,
+    "delta_ms": -4.9
+   },
+   {
+    "truth_s": 1.205805,
+    "phase_samples": 440,
+    "out_s": 1.196,
+    "out_pitch": 60,
+    "delta_ms": -9.8
+   },
+   {
+    "truth_s": 1.558707,
+    "phase_samples": 131,
+    "out_s": 1.544,
+    "out_pitch": 60,
+    "delta_ms": -14.7
+   },
+   {
+    "truth_s": 1.91161,
+    "phase_samples": 334,
+    "out_s": 1.904,
+    "out_pitch": 60,
+    "delta_ms": -7.6
+   }
+  ],
+  "note": "Reports the centre of a 2048-sample frame, so the frame convention contributes 0 ms. What is left is where in the frame the pitch becomes stable enough to start a note; with a 512-sample hop that can only be stated to 11.6 ms. Probe: median -7.6 ms, band 13.7 ms."
+ },
+ "aubio": {
+  "hop_samples": 256,
+  "hop_ms": 5.8,
+  "frame_samples": null,
+  "reported": "frame last sample (frames processed * hop)",
+  "frame_centre_ms": 2.9,
+  "probe_deltas_ms": [
+   57,
+   58.1,
+   59.2,
+   55.3,
+   56.4
+  ],
+  "probe_median_ms": 57,
+  "probe_band_ms": 3.9,
+  "probe_rows": [
+   {
+    "truth_s": 0.5,
+    "phase_samples": 34,
+    "out_s": 0.557,
+    "out_pitch": 60,
+    "delta_ms": 57
+   },
+   {
+    "truth_s": 0.852902,
+    "phase_samples": 237,
+    "out_s": 0.911,
+    "out_pitch": 60,
+    "delta_ms": 58.1
+   },
+   {
+    "truth_s": 1.205805,
+    "phase_samples": 440,
+    "out_s": 1.265,
+    "out_pitch": 60,
+    "delta_ms": 59.2
+   },
+   {
+    "truth_s": 1.558707,
+    "phase_samples": 131,
+    "out_s": 1.614,
+    "out_pitch": 60,
+    "delta_ms": 55.3
+   },
+   {
+    "truth_s": 1.91161,
+    "phase_samples": 334,
+    "out_s": 1.968,
+    "out_pitch": 60,
+    "delta_ms": 56.4
+   }
+  ],
+  "note": "Reports the last sample of the frame it has processed, which is 2.9 ms later than that frame's centre — a lattice convention, half a hop. The remaining 54.1 ms is aubio's own onset smoothing (median filter plus lookback). That split is measured here for the convention and only bounded for the smoothing: this repository does not run aubionotes with the filter disabled, so the continuous part is stated as \"the rest\", not decomposed further."
+ }
+}

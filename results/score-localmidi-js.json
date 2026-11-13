@@ -11,8 +11,8 @@
   "dangling": 0,
   "join_piece_note": "an output that starts inside a note's join window and answers nothing: one glide cut into two. Neither a duplicate of a truth note (spurious) nor a lost output (dangling) — it is the join being chopped, so it gets its own bucket rather than being forced into either.",
   "answered_by_spurious": 0,
-  "align_ms": -13,
-  "align_status": "constant",
+  "align_ms": 0,
+  "align_status": "withheld",
   "merged_outputs": 0,
   "merged_notes": 0,
   "solo_notes": 11,
@@ -113,5 +113,6 @@
     69
   ],
   "tool": "localmidi-js",
-  "source": "out-localmidi-s2.json"
+  "source": "out-localmidi-s2.json",
+  "align_why": "does not reproduce: -12 on A, -13 on C, -14 on s1, -14 on s2, -12 on s3, -15 on s4, -12 on s5, -15 on s6, -12 on s7, 1 on s8, -17 on s9 — a band of 18 ms across 11 samples of different material, against a 10 ms bar"
 }

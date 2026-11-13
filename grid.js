@@ -17,12 +17,13 @@
 //
 // They share the fine grid; pYIN uses only every second point of it.
 //
-// That matters for the alignment constant. pYIN's median came out 0 ms on
-// melody.wav and -11 ms on melody3.wav — one 11.61 ms hop apart, against a 10 ms
-// bar. Both numbers are lattice readings: a truth onset lands at an arbitrary place
-// inside the hop, so which lattice point a note snaps to depends on where the note
-// sits in the file, not on the engine. Withholding pYIN is therefore not a 1 ms
-// miss to be argued about; there was never a sub-hop number to have.
+// That matters for the alignment constant. pYIN's median came out +3 ms on
+// melody.wav and -11 ms on melody3.wav — 14 ms, 1.21 of its own 11.61 ms hop,
+// against a 10 ms bar. Both numbers are lattice readings: a truth onset lands at
+// an arbitrary place inside the hop, so which lattice point a note snaps to
+// depends on where the note sits in the file, not on the engine. Withholding pYIN
+// is therefore not a "4 ms miss" to be argued about; there was never a sub-hop
+// number to have.
 const fs = require('fs');
 const path = require('path');
 

@@ -1,0 +1,101 @@
+{
+ "file": "melody-s3.wav",
+ "sample_rate": 44100,
+ "duration": 10.356,
+ "notes": [
+  {
+   "pitch": 64,
+   "start": 0.0,
+   "end": 0.691,
+   "kind": "vibrato"
+  },
+  {
+   "pitch": 66,
+   "start": 0.751,
+   "end": 1.41,
+   "kind": "vibrato"
+  },
+  {
+   "pitch": 68,
+   "start": 1.47,
+   "end": 2.109,
+   "kind": "vibrato"
+  },
+  {
+   "pitch": 57,
+   "start": 2.169,
+   "end": 2.783,
+   "kind": "vibrato"
+  },
+  {
+   "pitch": 62,
+   "start": 2.843,
+   "end": 3.612,
+   "kind": "vibrato"
+  },
+  {
+   "pitch": 56,
+   "start": 3.672,
+   "end": 4.231,
+   "kind": "vibrato"
+  },
+  {
+   "pitch": 59,
+   "start": 4.291,
+   "end": 4.984,
+   "kind": "vibrato"
+  },
+  {
+   "pitch": 55,
+   "start": 5.184,
+   "end": 5.835,
+   "kind": "vibrato"
+  },
+  {
+   "pitch": 67,
+   "start": 5.895,
+   "end": 6.606,
+   "kind": "vibrato"
+  },
+  {
+   "pitch": 63,
+   "start": 6.666,
+   "end": 7.411,
+   "kind": "vibrato"
+  },
+  {
+   "pitch": 60,
+   "start": 7.471,
+   "end": 8.246,
+   "kind": "vibrato"
+  },
+  {
+   "pitch": 61,
+   "start": 8.446,
+   "end": 9.042,
+   "kind": "vibrato"
+  },
+  {
+   "pitch": 65,
+   "start": 9.102,
+   "end": 9.856,
+   "kind": "vibrato"
+  }
+ ],
+ "glide": {
+  "from": 64,
+  "to": 66,
+  "start": 9.856,
+  "end": 10.156,
+  "note": "two defensible answers, excluded from error count"
+ },
+ "counted_notes": 13,
+ "kind": "vibrato",
+ "params": {
+  "kind": "vibrato",
+  "register": "mid",
+  "glide_ms": 300,
+  "rate": 6.2
+ },
+ "why": "one of nine samples of one condition (silence between every note). This one varies only the material: vibrato 6.2 Hz, register mid, glide 300 ms."
+}

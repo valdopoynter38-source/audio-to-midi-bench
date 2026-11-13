@@ -1,38 +1,433 @@
 {
- "method": "per truth note: among the outputs with the same pitch starting within +/-150 ms, take the nearest; delta = out.start - truth.start. A constant must (1) come from a set the tool did not choose — it spoke about >= 0.9 of the notes on every sample — and (2) reproduce on a second sample of the same condition within 10 ms.",
+ "method": "per truth note: among the outputs with the same pitch starting within +/-150 ms, take the nearest; delta = out.start - truth.start. The first note of each sample is excluded: it starts at t = 0 with no silence in front of it, so every engine fires on the first frame and the delta is 0 by construction — a different condition, not a reading. A constant must (1) come from a set the tool did not choose — spoken (any pitch) >= 0.9 of the notes on EVERY sample — and (2) reproduce across >= 5 samples of the same condition, judged by the band of the per-sample medians, not by a pairwise difference. Matched counts are reported and never used as a gate: a pitch error is not a refusal to speak.",
  "gates": {
   "coverage": 0.9,
-  "reproduction_ms": 10
+  "band_ms": 10,
+  "min_samples": 5,
+  "lead_in_excluded_s": 0.05
  },
- "constants_ms": {
-  "localmidi": -13
- },
+ "constants_ms": {},
  "withheld": {
   "aubio": {
    "per_sample_ms": {
     "A": 57,
-    "C": 53
+    "C": 55,
+    "s1": 51,
+    "s2": 52,
+    "s3": 55,
+    "s4": 53,
+    "s5": 55,
+    "s6": 53,
+    "s7": 52,
+    "s8": null,
+    "s9": 53
    },
-   "why": "spoke about only 7 of 11 notes on sample A. The median is taken over the notes this engine chose to answer, so it describes the selection as much as the engine. Subtracting it would calibrate the ruler on the engine's own choice of which notes to report."
+   "spoken": {
+    "A": "6/10",
+    "C": "8/12",
+    "s1": "9/12",
+    "s2": "8/12",
+    "s3": "6/12",
+    "s4": "9/12",
+    "s5": "6/12",
+    "s6": "7/12",
+    "s7": "7/12",
+    "s8": "0/12",
+    "s9": "12/12"
+   },
+   "matched": {
+    "A": "5/10",
+    "C": "8/12",
+    "s1": "9/12",
+    "s2": "8/12",
+    "s3": "6/12",
+    "s4": "9/12",
+    "s5": "6/12",
+    "s6": "7/12",
+    "s7": "7/12",
+    "s8": "0/12",
+    "s9": "11/12"
+   },
+   "why": "spoke about only 0 of 12 notes on sample s8 (spoken, any pitch; matched was 0/12). The median is taken over the notes this engine chose to speak about, so it describes the selection as much as the engine. Subtracting it would calibrate the ruler on the engine's own choice of which notes to report. Timebase: frame last sample (frames processed * hop); frame convention 2.9 ms, probe median 57 ms — the 54.1 ms between them is where inside the frame the onset is detected (continuous), which is a different object from the frame convention (discrete, one hop wide)."
+  },
+  "localmidi": {
+   "per_sample_ms": {
+    "A": -12,
+    "C": -13,
+    "s1": -14,
+    "s2": -14,
+    "s3": -12,
+    "s4": -15,
+    "s5": -12,
+    "s6": -15,
+    "s7": -12,
+    "s8": 1,
+    "s9": -17
+   },
+   "spoken": {
+    "A": "10/10",
+    "C": "12/12",
+    "s1": "12/12",
+    "s2": "12/12",
+    "s3": "12/12",
+    "s4": "12/12",
+    "s5": "12/12",
+    "s6": "12/12",
+    "s7": "12/12",
+    "s8": "12/12",
+    "s9": "12/12"
+   },
+   "matched": {
+    "A": "9/10",
+    "C": "10/12",
+    "s1": "12/12",
+    "s2": "9/12",
+    "s3": "10/12",
+    "s4": "11/12",
+    "s5": "8/12",
+    "s6": "7/12",
+    "s7": "9/12",
+    "s8": "6/12",
+    "s9": "11/12"
+   },
+   "band_ms": 18,
+   "why": "does not reproduce: -12 on A, -13 on C, -14 on s1, -14 on s2, -12 on s3, -15 on s4, -12 on s5, -15 on s6, -12 on s7, 1 on s8, -17 on s9 — a band of 18 ms across 11 samples of different material, against a 10 ms bar. A band is reported instead of a pairwise difference because any two samples can be picked to agree; the band is the spread over material that was chosen in advance. A constant read off a set this narrow would be this file's reading, not the engine's. Across registers the medians are mid -14 ms (7 samples), low 1 ms (1 sample), high -17 ms (1 sample), a spread of 18 ms — so the offset is a function of pitch, not a constant. A per-register constant would need its own reproduction test inside each register, which these samples are not. Timebase: frame first sample (offset / sampleRate); frame convention -11.6 ms, probe median -12 ms — the -0.4 ms between them is where inside the frame the onset is detected (continuous), which is a different object from the frame convention (discrete, one hop wide)."
   },
   "pyin": {
    "per_sample_ms": {
-    "A": 0,
-    "C": -11
+    "A": 3,
+    "C": -11,
+    "s1": -7,
+    "s2": -3,
+    "s3": -6,
+    "s4": -8,
+    "s5": -8,
+    "s6": -1,
+    "s7": -5,
+    "s8": 0,
+    "s9": -6
    },
-   "why": "does not reproduce: 0 ms on sample A, -11 ms on sample C — a spread of 11 ms against a 10 ms bar. One sample cannot tell a fixed offset from this file's reading, and a second sample of the same condition disagrees, so there is no constant to subtract."
+   "spoken": {
+    "A": "10/10",
+    "C": "12/12",
+    "s1": "12/12",
+    "s2": "12/12",
+    "s3": "12/12",
+    "s4": "12/12",
+    "s5": "12/12",
+    "s6": "12/12",
+    "s7": "12/12",
+    "s8": "12/12",
+    "s9": "12/12"
+   },
+   "matched": {
+    "A": "10/10",
+    "C": "12/12",
+    "s1": "12/12",
+    "s2": "12/12",
+    "s3": "12/12",
+    "s4": "12/12",
+    "s5": "12/12",
+    "s6": "12/12",
+    "s7": "12/12",
+    "s8": "12/12",
+    "s9": "12/12"
+   },
+   "band_ms": 14,
+   "why": "does not reproduce: 3 on A, -11 on C, -7 on s1, -3 on s2, -6 on s3, -8 on s4, -8 on s5, -1 on s6, -5 on s7, 0 on s8, -6 on s9 — a band of 14 ms across 11 samples of different material, against a 10 ms bar. A band is reported instead of a pairwise difference because any two samples can be picked to agree; the band is the spread over material that was chosen in advance. A constant read off a set this narrow would be this file's reading, not the engine's. The register does not explain the band: mid -6 ms (7 samples), low 0 ms (1 sample), high -6 ms (1 sample), a spread of 6 ms, inside the bar — whatever moves this number is something else. Timebase: frame centre (librosa frames_to_time, center=True); frame convention 0 ms, probe median -7.6 ms — the -7.6 ms between them is where inside the frame the onset is detected (continuous), which is a different object from the frame convention (discrete, one hop wide)."
+  }
+ },
+ "timebase": {
+  "localmidi": {
+   "hop_samples": 256,
+   "hop_ms": 5.8,
+   "frame_samples": 1024,
+   "reported": "frame first sample (offset / sampleRate)",
+   "frame_centre_ms": -11.6,
+   "probe_deltas_ms": [
+    -12,
+    -10.9,
+    -9.8,
+    -14.7,
+    -13.6
+   ],
+   "probe_median_ms": -12,
+   "probe_band_ms": 4.9,
+   "probe_rows": [
+    {
+     "truth_s": 0.5,
+     "phase_samples": 34,
+     "out_s": 0.488,
+     "out_pitch": 61,
+     "delta_ms": -12
+    },
+    {
+     "truth_s": 0.852902,
+     "phase_samples": 237,
+     "out_s": 0.842,
+     "out_pitch": 60,
+     "delta_ms": -10.9
+    },
+    {
+     "truth_s": 1.205805,
+     "phase_samples": 440,
+     "out_s": 1.196,
+     "out_pitch": 60,
+     "delta_ms": -9.8
+    },
+    {
+     "truth_s": 1.558707,
+     "phase_samples": 131,
+     "out_s": 1.544,
+     "out_pitch": 60,
+     "delta_ms": -14.7
+    },
+    {
+     "truth_s": 1.91161,
+     "phase_samples": 334,
+     "out_s": 1.898,
+     "out_pitch": 60,
+     "delta_ms": -13.6
+    }
+   ],
+   "note": "Reports the first sample of a 1024-sample frame. The centre of that frame is 11.6 ms later, so -11.6 ms of any constant is the frame-centre convention (discrete, one 5.81 ms hop wide) and the remainder is where inside the frame the RMS crosses threshold. Probe: median -12 ms, band 4.9 ms over five phases — the band is smaller than a hop, which is what a lattice looks like."
+  },
+  "pyin": {
+   "hop_samples": 512,
+   "hop_ms": 11.6,
+   "frame_samples": 2048,
+   "reported": "frame centre (librosa frames_to_time, center=True)",
+   "frame_centre_ms": 0,
+   "probe_deltas_ms": [
+    -1,
+    -4.9,
+    -9.8,
+    -14.7,
+    -7.6
+   ],
+   "probe_median_ms": -7.6,
+   "probe_band_ms": 13.7,
+   "probe_rows": [
+    {
+     "truth_s": 0.5,
+     "phase_samples": 34,
+     "out_s": 0.499,
+     "out_pitch": 60,
+     "delta_ms": -1
+    },
+    {
+     "truth_s": 0.852902,
+     "phase_samples": 237,
+     "out_s": 0.848,
+     "out_pitch": 60,
+     "delta_ms": -4.9
+    },
+    {
+     "truth_s": 1.205805,
+     "phase_samples": 440,
+     "out_s": 1.196,
+     "out_pitch": 60,
+     "delta_ms": -9.8
+    },
+    {
+     "truth_s": 1.558707,
+     "phase_samples": 131,
+     "out_s": 1.544,
+     "out_pitch": 60,
+     "delta_ms": -14.7
+    },
+    {
+     "truth_s": 1.91161,
+     "phase_samples": 334,
+     "out_s": 1.904,
+     "out_pitch": 60,
+     "delta_ms": -7.6
+    }
+   ],
+   "note": "Reports the centre of a 2048-sample frame, so the frame convention contributes 0 ms. What is left is where in the frame the pitch becomes stable enough to start a note; with a 512-sample hop that can only be stated to 11.6 ms. Probe: median -7.6 ms, band 13.7 ms."
+  },
+  "aubio": {
+   "hop_samples": 256,
+   "hop_ms": 5.8,
+   "frame_samples": null,
+   "reported": "frame last sample (frames processed * hop)",
+   "frame_centre_ms": 2.9,
+   "probe_deltas_ms": [
+    57,
+    58.1,
+    59.2,
+    55.3,
+    56.4
+   ],
+   "probe_median_ms": 57,
+   "probe_band_ms": 3.9,
+   "probe_rows": [
+    {
+     "truth_s": 0.5,
+     "phase_samples": 34,
+     "out_s": 0.557,
+     "out_pitch": 60,
+     "delta_ms": 57
+    },
+    {
+     "truth_s": 0.852902,
+     "phase_samples": 237,
+     "out_s": 0.911,
+     "out_pitch": 60,
+     "delta_ms": 58.1
+    },
+    {
+     "truth_s": 1.205805,
+     "phase_samples": 440,
+     "out_s": 1.265,
+     "out_pitch": 60,
+     "delta_ms": 59.2
+    },
+    {
+     "truth_s": 1.558707,
+     "phase_samples": 131,
+     "out_s": 1.614,
+     "out_pitch": 60,
+     "delta_ms": 55.3
+    },
+    {
+     "truth_s": 1.91161,
+     "phase_samples": 334,
+     "out_s": 1.968,
+     "out_pitch": 60,
+     "delta_ms": 56.4
+    }
+   ],
+   "note": "Reports the last sample of the frame it has processed, which is 2.9 ms later than that frame's centre — a lattice convention, half a hop. The remaining 54.1 ms is aubio's own onset smoothing (median filter plus lookback). That split is measured here for the convention and only bounded for the smoothing: this repository does not run aubionotes with the filter disabled, so the continuous part is stated as \"the rest\", not decomposed further."
   }
  },
  "samples": [
   {
    "sample": "A",
    "file": "truth.json",
-   "notes_total": 11
+   "kind": null,
+   "params": null,
+   "notes_total": 10,
+   "notes_dropped_no_lead_in": 1
   },
   {
    "sample": "C",
    "file": "truth3.json",
-   "notes_total": 13
+   "kind": null,
+   "params": null,
+   "notes_total": 12,
+   "notes_dropped_no_lead_in": 1
+  },
+  {
+   "sample": "s1",
+   "file": "truth-s1.json",
+   "kind": "plain",
+   "params": {
+    "kind": "plain",
+    "register": "mid",
+    "glide_ms": 300
+   },
+   "notes_total": 12,
+   "notes_dropped_no_lead_in": 1
+  },
+  {
+   "sample": "s2",
+   "file": "truth-s2.json",
+   "kind": "vibrato",
+   "params": {
+    "kind": "vibrato",
+    "register": "mid",
+    "glide_ms": 300,
+    "rate": 5.5
+   },
+   "notes_total": 12,
+   "notes_dropped_no_lead_in": 1
+  },
+  {
+   "sample": "s3",
+   "file": "truth-s3.json",
+   "kind": "vibrato",
+   "params": {
+    "kind": "vibrato",
+    "register": "mid",
+    "glide_ms": 300,
+    "rate": 6.2
+   },
+   "notes_total": 12,
+   "notes_dropped_no_lead_in": 1
+  },
+  {
+   "sample": "s4",
+   "file": "truth-s4.json",
+   "kind": "vibrato",
+   "params": {
+    "kind": "vibrato",
+    "register": "mid",
+    "glide_ms": 300,
+    "rate": 7
+   },
+   "notes_total": 12,
+   "notes_dropped_no_lead_in": 1
+  },
+  {
+   "sample": "s5",
+   "file": "truth-s5.json",
+   "kind": "plain",
+   "params": {
+    "kind": "plain",
+    "register": "mid",
+    "glide_ms": 200
+   },
+   "notes_total": 12,
+   "notes_dropped_no_lead_in": 1
+  },
+  {
+   "sample": "s6",
+   "file": "truth-s6.json",
+   "kind": "plain",
+   "params": {
+    "kind": "plain",
+    "register": "mid",
+    "glide_ms": 300
+   },
+   "notes_total": 12,
+   "notes_dropped_no_lead_in": 1
+  },
+  {
+   "sample": "s7",
+   "file": "truth-s7.json",
+   "kind": "plain",
+   "params": {
+    "kind": "plain",
+    "register": "mid",
+    "glide_ms": 400
+   },
+   "notes_total": 12,
+   "notes_dropped_no_lead_in": 1
+  },
+  {
+   "sample": "s8",
+   "file": "truth-s8.json",
+   "kind": "plain",
+   "params": {
+    "kind": "plain",
+    "register": "low",
+    "glide_ms": 300
+   },
+   "notes_total": 12,
+   "notes_dropped_no_lead_in": 1
+  },
+  {
+   "sample": "s9",
+   "file": "truth-s9.json",
+   "kind": "plain",
+   "params": {
+    "kind": "plain",
+    "register": "high",
+    "glide_ms": 300
+   },
+   "notes_total": 12,
+   "notes_dropped_no_lead_in": 1
   }
  ],
  "rows": [
@@ -42,19 +437,128 @@
     {
      "sample": "A",
      "file": "truth.json",
-     "spoken": 7,
-     "notes_total": 11,
+     "kind": null,
+     "spoken": 6,
+     "matched": 5,
+     "notes_total": 10,
+     "spoken_share": 0.6,
+     "matched_share": 0.5,
      "median_ms": 57
     },
     {
      "sample": "C",
      "file": "truth3.json",
+     "kind": null,
+     "spoken": 8,
+     "matched": 8,
+     "notes_total": 12,
+     "spoken_share": 0.667,
+     "matched_share": 0.667,
+     "median_ms": 55
+    },
+    {
+     "sample": "s1",
+     "file": "truth-s1.json",
+     "kind": "plain",
      "spoken": 9,
-     "notes_total": 13,
+     "matched": 9,
+     "notes_total": 12,
+     "spoken_share": 0.75,
+     "matched_share": 0.75,
+     "median_ms": 51
+    },
+    {
+     "sample": "s2",
+     "file": "truth-s2.json",
+     "kind": "vibrato",
+     "spoken": 8,
+     "matched": 8,
+     "notes_total": 12,
+     "spoken_share": 0.667,
+     "matched_share": 0.667,
+     "median_ms": 52
+    },
+    {
+     "sample": "s3",
+     "file": "truth-s3.json",
+     "kind": "vibrato",
+     "spoken": 6,
+     "matched": 6,
+     "notes_total": 12,
+     "spoken_share": 0.5,
+     "matched_share": 0.5,
+     "median_ms": 55
+    },
+    {
+     "sample": "s4",
+     "file": "truth-s4.json",
+     "kind": "vibrato",
+     "spoken": 9,
+     "matched": 9,
+     "notes_total": 12,
+     "spoken_share": 0.75,
+     "matched_share": 0.75,
+     "median_ms": 53
+    },
+    {
+     "sample": "s5",
+     "file": "truth-s5.json",
+     "kind": "plain",
+     "spoken": 6,
+     "matched": 6,
+     "notes_total": 12,
+     "spoken_share": 0.5,
+     "matched_share": 0.5,
+     "median_ms": 55
+    },
+    {
+     "sample": "s6",
+     "file": "truth-s6.json",
+     "kind": "plain",
+     "spoken": 7,
+     "matched": 7,
+     "notes_total": 12,
+     "spoken_share": 0.583,
+     "matched_share": 0.583,
+     "median_ms": 53
+    },
+    {
+     "sample": "s7",
+     "file": "truth-s7.json",
+     "kind": "plain",
+     "spoken": 7,
+     "matched": 7,
+     "notes_total": 12,
+     "spoken_share": 0.583,
+     "matched_share": 0.583,
+     "median_ms": 52
+    },
+    {
+     "sample": "s8",
+     "file": "truth-s8.json",
+     "kind": "plain",
+     "spoken": 0,
+     "matched": 0,
+     "notes_total": 12,
+     "spoken_share": 0,
+     "matched_share": 0,
+     "median_ms": null
+    },
+    {
+     "sample": "s9",
+     "file": "truth-s9.json",
+     "kind": "plain",
+     "spoken": 12,
+     "matched": 11,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 0.917,
      "median_ms": 53
     }
    ],
-   "spread_ms": 4,
+   "n_samples": 11,
+   "n_medians": 10,
+   "band_ms": 6,
    "cover_ok": false,
    "reproduce_ok": true
   },
@@ -64,21 +568,130 @@
     {
      "sample": "A",
      "file": "truth.json",
-     "spoken": 11,
-     "notes_total": 11,
-     "median_ms": -11
+     "kind": null,
+     "spoken": 10,
+     "matched": 9,
+     "notes_total": 10,
+     "spoken_share": 1,
+     "matched_share": 0.9,
+     "median_ms": -12
     },
     {
      "sample": "C",
      "file": "truth3.json",
-     "spoken": 13,
-     "notes_total": 13,
+     "kind": null,
+     "spoken": 12,
+     "matched": 10,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 0.833,
      "median_ms": -13
+    },
+    {
+     "sample": "s1",
+     "file": "truth-s1.json",
+     "kind": "plain",
+     "spoken": 12,
+     "matched": 12,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 1,
+     "median_ms": -14
+    },
+    {
+     "sample": "s2",
+     "file": "truth-s2.json",
+     "kind": "vibrato",
+     "spoken": 12,
+     "matched": 9,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 0.75,
+     "median_ms": -14
+    },
+    {
+     "sample": "s3",
+     "file": "truth-s3.json",
+     "kind": "vibrato",
+     "spoken": 12,
+     "matched": 10,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 0.833,
+     "median_ms": -12
+    },
+    {
+     "sample": "s4",
+     "file": "truth-s4.json",
+     "kind": "vibrato",
+     "spoken": 12,
+     "matched": 11,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 0.917,
+     "median_ms": -15
+    },
+    {
+     "sample": "s5",
+     "file": "truth-s5.json",
+     "kind": "plain",
+     "spoken": 12,
+     "matched": 8,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 0.667,
+     "median_ms": -12
+    },
+    {
+     "sample": "s6",
+     "file": "truth-s6.json",
+     "kind": "plain",
+     "spoken": 12,
+     "matched": 7,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 0.583,
+     "median_ms": -15
+    },
+    {
+     "sample": "s7",
+     "file": "truth-s7.json",
+     "kind": "plain",
+     "spoken": 12,
+     "matched": 9,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 0.75,
+     "median_ms": -12
+    },
+    {
+     "sample": "s8",
+     "file": "truth-s8.json",
+     "kind": "plain",
+     "spoken": 12,
+     "matched": 6,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 0.5,
+     "median_ms": 1
+    },
+    {
+     "sample": "s9",
+     "file": "truth-s9.json",
+     "kind": "plain",
+     "spoken": 12,
+     "matched": 11,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 0.917,
+     "median_ms": -17
     }
    ],
-   "spread_ms": 2,
+   "n_samples": 11,
+   "n_medians": 11,
+   "band_ms": 18,
    "cover_ok": true,
-   "reproduce_ok": true
+   "reproduce_ok": false
   },
   {
    "tool": "pyin",
@@ -86,19 +699,128 @@
     {
      "sample": "A",
      "file": "truth.json",
-     "spoken": 11,
-     "notes_total": 11,
-     "median_ms": 0
+     "kind": null,
+     "spoken": 10,
+     "matched": 10,
+     "notes_total": 10,
+     "spoken_share": 1,
+     "matched_share": 1,
+     "median_ms": 3
     },
     {
      "sample": "C",
      "file": "truth3.json",
-     "spoken": 13,
-     "notes_total": 13,
+     "kind": null,
+     "spoken": 12,
+     "matched": 12,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 1,
      "median_ms": -11
+    },
+    {
+     "sample": "s1",
+     "file": "truth-s1.json",
+     "kind": "plain",
+     "spoken": 12,
+     "matched": 12,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 1,
+     "median_ms": -7
+    },
+    {
+     "sample": "s2",
+     "file": "truth-s2.json",
+     "kind": "vibrato",
+     "spoken": 12,
+     "matched": 12,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 1,
+     "median_ms": -3
+    },
+    {
+     "sample": "s3",
+     "file": "truth-s3.json",
+     "kind": "vibrato",
+     "spoken": 12,
+     "matched": 12,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 1,
+     "median_ms": -6
+    },
+    {
+     "sample": "s4",
+     "file": "truth-s4.json",
+     "kind": "vibrato",
+     "spoken": 12,
+     "matched": 12,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 1,
+     "median_ms": -8
+    },
+    {
+     "sample": "s5",
+     "file": "truth-s5.json",
+     "kind": "plain",
+     "spoken": 12,
+     "matched": 12,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 1,
+     "median_ms": -8
+    },
+    {
+     "sample": "s6",
+     "file": "truth-s6.json",
+     "kind": "plain",
+     "spoken": 12,
+     "matched": 12,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 1,
+     "median_ms": -1
+    },
+    {
+     "sample": "s7",
+     "file": "truth-s7.json",
+     "kind": "plain",
+     "spoken": 12,
+     "matched": 12,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 1,
+     "median_ms": -5
+    },
+    {
+     "sample": "s8",
+     "file": "truth-s8.json",
+     "kind": "plain",
+     "spoken": 12,
+     "matched": 12,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 1,
+     "median_ms": 0
+    },
+    {
+     "sample": "s9",
+     "file": "truth-s9.json",
+     "kind": "plain",
+     "spoken": 12,
+     "matched": 12,
+     "notes_total": 12,
+     "spoken_share": 1,
+     "matched_share": 1,
+     "median_ms": -6
     }
    ],
-   "spread_ms": 11,
+   "n_samples": 11,
+   "n_medians": 11,
+   "band_ms": 14,
    "cover_ok": true,
    "reproduce_ok": false
   }

@@ -4,6 +4,8 @@
 !truth2.json
 !truth2-90.json
 !truth3.json
+!truth-s*.json
+!probe-truth.json
 !align.json
 /*.tsv
 __pycache__/
@@ -18,4 +20,7 @@ aubio/
 /build-90/
 # sample C is generated into its own dir; the committed copies live in results/c/
 /build-c/
+# the nine-sample set and the frame probe; committed copies live in results/s/ and results/
+/build-s/
+/build-probe/
 /build-verify.log

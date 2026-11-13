@@ -125,5 +125,5 @@
   "glide_out": [],
   "tool": "aubio",
   "source": "build-c/out-aubio.json",
-  "align_why": "spoke about only 7 of 11 notes on sample A"
+  "align_why": "spoke about only 0 of 12 notes on sample s8 (spoken, any pitch; matched was 0/12)"
 }

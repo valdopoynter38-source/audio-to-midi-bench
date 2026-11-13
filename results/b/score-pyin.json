@@ -342,5 +342,5 @@
   },
   "tool": "pyin",
   "source": "build-b/out-pyin.json",
-  "align_why": "does not reproduce: 0 ms on sample A, -11 ms on sample C — a spread of 11 ms against a 10 ms bar"
+  "align_why": "does not reproduce: 3 on A, -11 on C, -7 on s1, -3 on s2, -6 on s3, -8 on s4, -8 on s5, -1 on s6, -5 on s7, 0 on s8, -6 on s9 — a band of 14 ms across 11 samples of different material, against a 10 ms bar"
 }

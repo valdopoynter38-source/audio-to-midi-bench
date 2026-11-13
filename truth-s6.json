@@ -1,0 +1,100 @@
+{
+ "file": "melody-s6.wav",
+ "sample_rate": 44100,
+ "duration": 9.951,
+ "notes": [
+  {
+   "pitch": 61,
+   "start": 0.0,
+   "end": 0.702,
+   "kind": "plain"
+  },
+  {
+   "pitch": 56,
+   "start": 0.762,
+   "end": 1.482,
+   "kind": "plain"
+  },
+  {
+   "pitch": 69,
+   "start": 1.542,
+   "end": 2.138,
+   "kind": "plain"
+  },
+  {
+   "pitch": 57,
+   "start": 2.198,
+   "end": 2.819,
+   "kind": "plain"
+  },
+  {
+   "pitch": 65,
+   "start": 2.879,
+   "end": 3.581,
+   "kind": "plain"
+  },
+  {
+   "pitch": 60,
+   "start": 3.641,
+   "end": 4.318,
+   "kind": "plain"
+  },
+  {
+   "pitch": 68,
+   "start": 4.378,
+   "end": 5.003,
+   "kind": "plain"
+  },
+  {
+   "pitch": 59,
+   "start": 5.203,
+   "end": 5.893,
+   "kind": "plain"
+  },
+  {
+   "pitch": 55,
+   "start": 5.953,
+   "end": 6.557,
+   "kind": "plain"
+  },
+  {
+   "pitch": 58,
+   "start": 6.617,
+   "end": 7.169,
+   "kind": "plain"
+  },
+  {
+   "pitch": 64,
+   "start": 7.229,
+   "end": 7.835,
+   "kind": "plain"
+  },
+  {
+   "pitch": 63,
+   "start": 8.035,
+   "end": 8.6,
+   "kind": "plain"
+  },
+  {
+   "pitch": 66,
+   "start": 8.66,
+   "end": 9.451,
+   "kind": "plain"
+  }
+ ],
+ "glide": {
+  "from": 61,
+  "to": 56,
+  "start": 9.451,
+  "end": 9.751,
+  "note": "two defensible answers, excluded from error count"
+ },
+ "counted_notes": 13,
+ "kind": "plain",
+ "params": {
+  "kind": "plain",
+  "register": "mid",
+  "glide_ms": 300
+ },
+ "why": "one of nine samples of one condition (silence between every note). This one varies only the material: plain, register mid, glide 300 ms."
+}

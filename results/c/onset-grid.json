@@ -74,24 +74,24 @@
  "medians": {
   "aubio": {
    "A_ms": 57,
-   "C_ms": 53,
-   "difference_ms": 4,
-   "engine_hop_ms": 5.8,
-   "difference_in_hops": 0.69
-  },
-  "localmidi": {
-   "A_ms": -11,
-   "C_ms": -13,
+   "C_ms": 55,
    "difference_ms": 2,
    "engine_hop_ms": 5.8,
    "difference_in_hops": 0.34
   },
+  "localmidi": {
+   "A_ms": -12,
+   "C_ms": -13,
+   "difference_ms": 1,
+   "engine_hop_ms": 5.8,
+   "difference_in_hops": 0.17
+  },
   "pyin": {
-   "A_ms": 0,
+   "A_ms": 3,
    "C_ms": -11,
-   "difference_ms": 11,
+   "difference_ms": 14,
    "engine_hop_ms": 11.61,
-   "difference_in_hops": 0.95
+   "difference_in_hops": 1.21
   }
  },
  "note": "hop_samples is the finest hop that explains every start in the file within rounding. It describes the ruler and is not a correction: nothing here is added to any onset."

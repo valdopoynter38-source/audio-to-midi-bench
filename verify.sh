@@ -9,19 +9,21 @@
 # skipped with a note, not silently ignored.
 #
 # The order is the point: run the engines, then measure the ruler's alignment
-# constant on two samples where silence makes the answer unambiguous, then
-# score. Scoring before aligning would compare two time axes that are known to
-# be offset by tens of milliseconds, and every join measurement downstream would
-# inherit it.
+# constant, then score. Scoring before aligning would compare two time axes that
+# are known to be offset by tens of milliseconds, and every join measurement
+# downstream would inherit it.
 #
-# Two samples, not one. A single sample cannot distinguish "this engine is 11 ms
-# early" from "this engine is 11 ms early on this file", and running the same
-# file twice — on one machine or on two — cannot distinguish them either: that
-# is reproducibility, and it is not the question. So the same condition
-# (silence between every note) is built twice with different details, and the
-# constant is written only if both agree within 10 ms. An engine that answers
-# one of them only in part (aubio: 7 of 11, 9 of 13) is withheld regardless:
-# a median taken over the notes a tool chose to report is that tool's selection.
+# Nine samples, not one, and not two. A single sample cannot distinguish "this
+# engine is 11 ms early" from "this engine is 11 ms early on this file", and
+# running the same file twice — on one machine or on two — cannot distinguish
+# them either: that is reproducibility, and it is not the question. Two samples
+# give one comparison, and one comparison is not a band; pYIN puts two samples a
+# whole hop apart, so "A and C differ by 2 ms" is a pair that happened to agree.
+# Nine samples of different material (plain, three vibrato rates, three glide
+# lengths, a low register, a high register) give a band, and the band is what the
+# gate reads. An engine that answers a sample only in part is withheld
+# regardless: a median taken over the notes a tool chose to speak about is that
+# tool's selection.
 
 set -u
 cd "$(dirname "$0")" || exit 1
@@ -77,13 +79,50 @@ echo "== sample C: the same condition, every detail different =="
 # instead of butt-joined, vibrato at 6.2 Hz instead of 5.5, one 300 ms descending
 # glide instead of a 600 ms rising one. The condition — silence between every
 # note — is untouched, which is the only thing that has to stay fixed. This
-# sample exists to answer one question, so it is not a sample to rank engines on.
+# sample is one of the eleven the constant is read from, not a sample to rank
+# engines on.
 mkdir -p build-c
 node run-localmidi.js melody3.wav 2 build-c | sed 's/^/  /'
 if [ "$HAVE_PYIN" = 1 ]; then python run-pyin.py melody3.wav truth3.json build-c | sed 's/^/  /'
 else say "c-pYIN" "skipped — librosa not importable through librosa_shim"; skipped=$((skipped+1)); fi
 if [ "$HAVE_AUBIO" = 1 ]; then node run-aubio.js melody3.wav build-c 2>/dev/null | sed 's/^/  /'
 else say "c-aubio" "skipped — aubionotes not found"; skipped=$((skipped+1)); fi
+
+echo
+echo "== sample set: one condition, nine materials =="
+# Same condition as A and C (silence between every note). Only the material
+# changes: s1 plain, s2-s4 vibrato at 5.5 / 6.2 / 7.0 Hz, s5-s7 glide at 200 /
+# 300 / 400 ms, s8 low register 40-54, s9 high register 72-86. The three vibrato
+# rates and the three glide lengths are the "three different parameter sets": if
+# the constant were a function of the material, they would move it.
+python make-truth-set.py | sed 's/^/  /'
+for i in 1 2 3 4 5 6 7 8 9; do
+  mkdir -p build-s/s$i
+  node run-localmidi.js melody-s$i.wav 2 build-s/s$i >/dev/null 2>&1
+  if [ "$HAVE_PYIN" = 1 ]; then
+    python run-pyin.py melody-s$i.wav truth-s$i.json build-s/s$i >/dev/null 2>&1 || { say "s$i-pYIN" "failed"; skipped=$((skipped+1)); }
+  fi
+  if [ "$HAVE_AUBIO" = 1 ]; then
+    node run-aubio.js melody-s$i.wav build-s/s$i --single >/dev/null 2>&1 || { say "s$i-aubio" "failed"; skipped=$((skipped+1)); }
+  fi
+  echo "  s$i done"
+done
+
+echo
+echo "== probe: one note, five phases — what the number is made of =="
+# Not a gate. This separates a lattice convention (discrete, one hop wide) from
+# an analysis delay (continuous): one pitch, one envelope, five onsets a quarter
+# of a hop apart. If the deltas swing with the phase, that part is the lattice;
+# if they sit at one height, that part is the delay. Both are constants of the
+# implementation, neither is a constant of the material, and they are not the
+# same object.
+python probe-frame.py | sed 's/^/  /'
+mkdir -p build-probe
+node run-localmidi.js probe.wav 2 build-probe >/dev/null 2>&1
+if [ "$HAVE_PYIN" = 1 ]; then python run-pyin.py probe.wav probe-truth.json build-probe >/dev/null 2>&1; fi
+if [ "$HAVE_AUBIO" = 1 ]; then node run-aubio.js probe.wav build-probe >/dev/null 2>&1; fi
+node probe-report.js | sed 's/^/  /'
+cmp_file "timebase" build-probe/timebase.json results/timebase.json
 
 echo
 echo "== sample B: 27.89 s performed, 30 notes, legato + vibrato =="
@@ -99,11 +138,9 @@ echo "== sample B at a fixed 90 ms: the pre-change instrument =="
 # Not a sample to rank engines on. This is the version of B this repository used
 # before join length was derived from the interval, kept rebuildable (see
 # make-truth2.py) so that the joins can be re-measured on a file whose joins are
-# uniform. It used to double as the cross-sample check on the alignment constant.
-# It no longer does: aubio answers 4 of its 30 notes, so the "same number at a
-# different join" that this file once supplied came from a column that is now
-# withheld on its own coverage. The check moved to sample C, where all three
-# engines speak about the whole file.
+# uniform. It used to double as the cross-sample check on the alignment constant;
+# it no longer does, because two samples are not a band and this one only ever
+# supplied a second pair.
 mkdir -p build-b90
 node run-localmidi.js melody2-90.wav 2 build-b90 | sed 's/^/  /'
 if [ "$HAVE_PYIN" = 1 ]; then python run-pyin.py melody2-90.wav truth2-90.json build-b90 | sed 's/^/  /'
@@ -112,27 +149,39 @@ if [ "$HAVE_AUBIO" = 1 ]; then node run-aubio.js melody2-90.wav build-b90 2>/dev
 else say "b90-aubio" "skipped — aubionotes not found"; skipped=$((skipped+1)); fi
 
 echo
-echo "== the ruler's time axis: two samples of one condition =="
+echo "== the ruler's time axis: eleven samples of one condition =="
 # Gates are in align.js and were fixed before any number was read: coverage 0.9
-# (spoken / notes, on every sample) and reproduction 10 ms (|median_A - median_C|).
-# A constant is then the pooled median over every matched note of both samples,
-# not the average of two medians.
+# (spoken / notes, on EVERY sample) and a band of 10 ms over the per-sample
+# medians, with at least 5 samples. A constant is then the pooled median over
+# every matched note of every sample, not the average of the medians.
 if [ "$HAVE_PYIN" = 1 ] && [ "$HAVE_AUBIO" = 1 ]; then
-  node align.js --sample truth.json  out-localmidi-s2.json out-pyin.json out-aubio.json \
-                --sample truth3.json build-c/out-localmidi-s2.json build-c/out-pyin.json build-c/out-aubio.json \
+  node align.js --timebase build-probe/timebase.json \
+    --sample truth.json   out-localmidi-s2.json out-pyin.json out-aubio.json \
+    --sample truth3.json  build-c/out-localmidi-s2.json build-c/out-pyin.json build-c/out-aubio.json \
+    --sample truth-s1.json build-s/s1/out-localmidi-s2.json build-s/s1/out-pyin.json build-s/s1/out-aubio.json \
+    --sample truth-s2.json build-s/s2/out-localmidi-s2.json build-s/s2/out-pyin.json build-s/s2/out-aubio.json \
+    --sample truth-s3.json build-s/s3/out-localmidi-s2.json build-s/s3/out-pyin.json build-s/s3/out-aubio.json \
+    --sample truth-s4.json build-s/s4/out-localmidi-s2.json build-s/s4/out-pyin.json build-s/s4/out-aubio.json \
+    --sample truth-s5.json build-s/s5/out-localmidi-s2.json build-s/s5/out-pyin.json build-s/s5/out-aubio.json \
+    --sample truth-s6.json build-s/s6/out-localmidi-s2.json build-s/s6/out-pyin.json build-s/s6/out-aubio.json \
+    --sample truth-s7.json build-s/s7/out-localmidi-s2.json build-s/s7/out-pyin.json build-s/s7/out-aubio.json \
+    --sample truth-s8.json build-s/s8/out-localmidi-s2.json build-s/s8/out-pyin.json build-s/s8/out-aubio.json \
+    --sample truth-s9.json build-s/s9/out-localmidi-s2.json build-s/s9/out-pyin.json build-s/s9/out-aubio.json \
     > align.json
 else
-  say "align" "kept — needs all three engines on both samples"
+  say "align" "kept — needs all three engines on every sample"
 fi
 node -e '
 const a=require("./align.json");
-console.log(`  gates: coverage ${a.gates.coverage} (spoken/notes, on every sample) | reproduction ${a.gates.reproduction_ms} ms (|median A - median C|)`);
+console.log(`  gates: coverage ${a.gates.coverage} (spoken/notes, every sample) | band ${a.gates.band_ms} ms over >= ${a.gates.min_samples} samples`);
 for (const r of a.rows) {
   const c=a.constants_ms[r.tool], w=a.withheld[r.tool];
-  const verdict = c !== undefined ? `constant ${c>=0?"+":""}${c} ms (pooled)` : "withheld";
-  const per = r.per.map(p => `${String(p.median_ms).padStart(6)} ms on ${p.sample}  (${p.spoken}/${p.notes_total} spoken)`).join(" | ");
-  const spread = r.spread_ms === null ? "n/a" : `${r.spread_ms} ms`;
-  console.log(`  ${r.tool.padEnd(10)} ${verdict.padEnd(24)} ${per}  -> spread ${spread}`);
+  const verdict = c !== undefined ? `constant ${c.align_ms>=0?"+":""}${c.align_ms} ms (pooled)` : "withheld";
+  const meds = r.per.map(p => `${String(p.median_ms).padStart(5)}`).join(" ");
+  const spk = r.per.map(p => `${p.spoken}/${p.notes_total}`).join(" ");
+  const mch = r.per.map(p => `${p.matched}/${p.notes_total}`).join(" ");
+  console.log(`  ${r.tool.padEnd(10)} ${verdict.padEnd(26)} medians [${meds}]  band ${r.band_ms===null?"n/a":r.band_ms+" ms"}`);
+  console.log(`  ${"".padEnd(10)} spoken [${spk}]  matched [${mch}]  (gate reads spoken)`);
 }
 '
 cmp_file "align" align.json results/align.json
@@ -183,6 +232,24 @@ if [ "$HAVE_AUBIO" = 1 ]; then
   node grid.js build-c | sed 's/^/  /'
   cmp_file "c-onset-grid" build-c/onset-grid.json results/c/onset-grid.json
 fi
+
+echo
+echo "== the nine-sample set: onset readings only =="
+# These nine exist to read the constant, not to rank engines: they are scored
+# nowhere. What is checked is the engine output byte for byte, because that is
+# what the band is computed from. (localmidi also reports every note below MIDI
+# 42 as 89 on s8 — its lag search stops at frameSize/2 = 512 samples = 86 Hz —
+# which is why s8 has only six same-pitch matches and its median is a reading
+# off six notes, not thirteen.)
+for i in 1 2 3 4 5 6 7 8 9; do
+  cmp_file "s$i-localmidi" build-s/s$i/out-localmidi-s2.json results/s/s$i/out-localmidi-s2.json
+  if [ "$HAVE_PYIN" = 1 ]; then
+    cmp_file "s$i-pyin" build-s/s$i/out-pyin.json results/s/s$i/out-pyin.json
+  fi
+  if [ "$HAVE_AUBIO" = 1 ]; then
+    cmp_file "s$i-aubio" build-s/s$i/out-aubio.json results/s/s$i/out-aubio.json
+  fi
+done
 
 node analyze.js localmidi build-b/out-localmidi-s2.json truth2.json build-b | sed 's/^/  /'
 cmp_file "b-localmidi" build-b/out-localmidi-s2.json results/b/out-localmidi-s2.json
