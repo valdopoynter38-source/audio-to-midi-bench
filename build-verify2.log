@@ -1,0 +1,613 @@
+== input ==
+melody.wav  335160 samples  44100 Hz  16-bit  1 ch  670364 bytes
+truth.json  11 notes  0s .. 6.3s
+truth2.json 30 notes  0s .. 27.19s  26 joins
+truth3.json 13 notes  0s .. 9.8s  13 distinct pitches  gaps 60,60,60,60,60,60,200,60,60,60,200,60 ms
+
+== sample A: engines ==
+  notes: 13
+  60@0-0.586 62@0.586-1.19 64@1.19-1.788 67@1.788-2.386 69@2.386-2.99 67@2.99-3.587 64@3.587-4.191 62@4.191-4.789 60@4.789-5.985 63@5.985-6.136 65@6.136-6.298 67@6.583-6.972 69@6.972-7.198
+  frames 544 frame accuracy 0.965
+  notes 14
+  60@0.00-0.58 62@0.60-1.18 64@1.20-1.78 67@1.80-2.38 69@2.40-2.98 67@3.00-3.59 64@3.60-4.18 62@4.20-4.78 60@4.81-5.98 64@6.01-6.13 65@6.14-6.32 67@6.58-6.72 68@6.73-7.06 69@7.07-7.21
+  combos: 72
+  distinct outputs across all combos: 1
+  picked default|0.2|0.03 -> 7 notes: 60,64,67,69,64,64,67
+  
+  aubio on its own stderr (1 distinct line(s)):
+    warning: onset threshold not supported yet   [72/72 runs]
+
+== sample C: the same condition, every detail different ==
+  notes: 15
+  57@0-0.615 59@0.668-1.295 61@1.347-1.956 64@2.003-2.897 63@2.943-3.547 60@3.599-4.394 68@4.441-5.097 65@5.283-5.944 63@5.997-6.693 69@6.745-7.593 66@7.645-8.295 58@8.487-9.096 56@9.149-9.793 69@10.182-10.42 67@10.42-10.495
+  frames 721 frame accuracy 1.000
+  notes 16
+  57@0.00-0.63 59@0.67-1.31 61@1.36-1.97 64@2.01-2.91 62@2.95-3.56 60@3.60-4.41 67@4.46-5.11 65@5.28-5.97 63@6.00-6.71 69@6.75-7.62 66@7.65-8.31 58@8.49-9.11 56@9.15-9.81 69@10.18-10.26 68@10.28-10.44 67@10.45-10.52
+  combos: 72
+  distinct outputs across all combos: 1
+  picked default|0.2|0.03 -> 10 notes: 57,61,64,62,67,65,63,69,66,69
+  
+  aubio on its own stderr (1 distinct line(s)):
+    warning: onset threshold not supported yet   [72/72 runs]
+
+== sample B: 27.89 s performed, 30 notes, legato + vibrato ==
+  notes: 22
+  64@0-1.428 68@1.457-3.657 66@3.657-4.412 64@4.412-5.532 72@5.596-7.761 70@7.761-9.839 64@9.839-11.558 66@11.558-12.161 68@12.161-13.642 66@13.642-13.827 64@13.827-14.019 62@14.019-14.228 60@14.228-15.081 64@15.081-15.517 68@15.546-16.144 80@16.26-17.943 76@17.984-18.715 72@18.744-20.167 76@20.196-21.368 74@21.368-21.972 72@21.972-24.004 70@24.004-27.185
+  frames 2283 frame accuracy 0.958
+  notes 29
+  64@0.00-1.39 69@1.49-2.90 67@2.95-3.65 65@3.70-4.41 64@4.42-5.50 72@5.62-7.12 71@7.13-7.75 69@7.80-9.83 64@9.87-10.96 65@10.97-11.55 67@11.60-12.14 69@12.20-13.46 67@13.50-13.63 65@13.68-13.82 64@13.83-13.99 62@14.04-14.20 60@14.23-15.08 64@15.11-15.49 69@15.57-16.14 81@16.29-17.24 79@17.29-17.94 76@18.01-18.69 72@18.76-20.14 77@20.23-20.75 76@20.76-21.34 74@21.39-21.94 72@21.99-23.45 71@23.46-24.00 69@24.04-27.20
+  combos: 72
+  distinct outputs across all combos: 1
+  picked default|0.2|0.03 -> 30 notes: 64,65,68,66,64,65,71,70,64,64,64,66,68,68,66,64,63,61,64,65,70,80,78,75,73,76,75,73,71,70
+  
+  aubio on its own stderr (1 distinct line(s)):
+    warning: onset threshold not supported yet   [72/72 runs]
+
+== sample B at a fixed 90 ms: the pre-change instrument ==
+  notes: 22
+  64@0-1.434 68@1.463-3.68 66@3.68-4.441 64@4.441-5.521 72@5.579-7.779 70@7.779-9.839 64@9.839-11.581 66@11.581-12.179 68@12.179-13.665 66@13.665-13.851 64@13.851-14.054 62@14.054-14.257 60@14.257-15.081 64@15.081-15.523 68@15.552-16.132 80@16.213-17.955 76@18.007-18.727 72@18.762-20.172 76@20.201-21.403 74@21.403-22.007 72@22.007-24.021 70@24.021-27.185
+  frames 2283 frame accuracy 0.934
+  notes 29
+  64@0.00-1.41 69@1.50-2.93 67@2.98-3.68 65@3.74-4.45 64@4.46-5.49 72@5.60-7.15 71@7.16-7.78 69@7.84-9.83 64@9.87-11.01 65@11.02-11.57 67@11.63-12.17 69@12.22-13.48 67@13.54-13.65 65@13.71-13.86 64@13.87-14.03 62@14.07-14.22 60@14.27-15.08 64@15.11-15.49 69@15.58-16.13 81@16.24-17.26 79@17.32-17.95 76@18.03-18.70 72@18.79-20.14 77@20.24-20.79 76@20.80-21.37 74@21.42-21.98 72@22.02-23.50 71@23.51-24.02 69@24.08-27.20
+  combos: 72
+  distinct outputs across all combos: 1
+  picked default|0.2|0.03 -> 31 notes: 64,65,69,67,65,65,72,71,64,64,64,65,67,69,67,65,64,62,64,65,70,80,81,79,75,73,77,76,74,72,71
+  
+  aubio on its own stderr (1 distinct line(s)):
+    warning: onset threshold not supported yet   [72/72 runs]
+
+== the ruler's time axis: two samples of one condition ==
+  gates: coverage 0.9 (spoken/notes, on every sample) | reproduction 10 ms (|median A - median C|)
+  aubio      withheld                     57 ms on A  (7/11 spoken) |     53 ms on C  (9/13 spoken)  -> spread 4 ms
+  localmidi  constant -13 ms (pooled)    -11 ms on A  (11/11 spoken) |    -13 ms on C  (13/13 spoken)  -> spread 2 ms
+  pyin       withheld                      0 ms on A  (11/11 spoken) |    -11 ms on C  (13/13 spoken)  -> spread 11 ms
+align          identical to results/align.json
+
+== scoring (aligned first, then compared) ==
+  
+  == localmidi-js (out-localmidi-s2.json) ==
+  align     -13 ms removed from every onset (align.json, reproduced on two samples)
+  truth     11 notes -> correct 10 | wrong 1 | missing 0   (10+1+0 = 11)
+  outputs   13 notes -> used 11 | spurious 0 | glide 2 | join pieces 0 | dangling 0   (11+0+2+0+0 = 13)
+  merged    0 output(s) each cover 2+ truth notes, 0 note(s) merged | 0+11 = 11   (a second axis, not a bucket)
+    truth 60 @0s -> 60  ok
+    truth 62 @0.6s -> 62  ok
+    truth 64 @1.2s -> 64  ok
+    truth 67 @1.8s -> 67  ok
+    truth 69 @2.4s -> 69  ok
+    truth 67 @3s -> 67  ok
+    truth 64 @3.6s -> 64  ok
+    truth 62 @4.2s -> 62  ok
+    truth 60 @4.8s -> 60  ok
+    truth 64 @6s -> 63  wrong 63 (-1 st)
+    truth 65 @6.15s -> 65  ok
+    glide: 67,69
+    dur out   {"<0.2s":2,"0.2-0.5s":2,"0.5-1.0s":8,">1.0s":1}
+    dur truth {"<0.2s":2,"0.2-0.5s":0,"0.5-1.0s":8,">1.0s":1}
+  
+  == localmidi (out-localmidi.mid) ==
+  align     -13 ms removed from every onset (align.json, reproduced on two samples)
+  truth     11 notes -> correct 10 | wrong 1 | missing 0   (10+1+0 = 11)
+  outputs   13 notes -> used 11 | spurious 0 | glide 2 | join pieces 0 | dangling 0   (11+0+2+0+0 = 13)
+  merged    0 output(s) each cover 2+ truth notes, 0 note(s) merged | 0+11 = 11   (a second axis, not a bucket)
+    truth 60 @0s -> 60  ok
+    truth 62 @0.6s -> 62  ok
+    truth 64 @1.2s -> 64  ok
+    truth 67 @1.8s -> 67  ok
+    truth 69 @2.4s -> 69  ok
+    truth 67 @3s -> 67  ok
+    truth 64 @3.6s -> 64  ok
+    truth 62 @4.2s -> 62  ok
+    truth 60 @4.8s -> 60  ok
+    truth 64 @6s -> 63  wrong 63 (-1 st)
+    truth 65 @6.15s -> 65  ok
+    glide: 67,69
+    dur out   {"<0.2s":2,"0.2-0.5s":2,"0.5-1.0s":8,">1.0s":1}
+    dur truth {"<0.2s":2,"0.2-0.5s":0,"0.5-1.0s":8,">1.0s":1}
+localmidi      identical to results/out-localmidi-s2.json
+score-js       identical to results/score-localmidi-js.json
+score-mid      identical to results/score-localmidi.json
+  
+  == pyin (out-pyin.json) ==
+  align     no shift — align.json withholds a constant for this engine: does not reproduce: 0 ms on sample A, -11 ms on sample C — a spread of 11 ms against a 10 ms bar
+  truth     11 notes -> correct 11 | wrong 0 | missing 0   (11+0+0 = 11)
+  outputs   14 notes -> used 11 | spurious 0 | glide 3 | join pieces 0 | dangling 0   (11+0+3+0+0 = 14)
+  merged    0 output(s) each cover 2+ truth notes, 0 note(s) merged | 0+11 = 11   (a second axis, not a bucket)
+    truth 60 @0s -> 60  ok
+    truth 62 @0.6s -> 62  ok
+    truth 64 @1.2s -> 64  ok
+    truth 67 @1.8s -> 67  ok
+    truth 69 @2.4s -> 69  ok
+    truth 67 @3s -> 67  ok
+    truth 64 @3.6s -> 64  ok
+    truth 62 @4.2s -> 62  ok
+    truth 60 @4.8s -> 60  ok
+    truth 64 @6s -> 64  ok
+    truth 65 @6.15s -> 65  ok
+    glide: 67,68,69
+    dur out   {"<0.2s":4,"0.2-0.5s":1,"0.5-1.0s":8,">1.0s":1}
+    dur truth {"<0.2s":2,"0.2-0.5s":0,"0.5-1.0s":8,">1.0s":1}
+pyin           identical to results/out-pyin.json
+score-pyin     identical to results/score-pyin.json
+  
+  == aubio (out-aubio.json) ==
+  align     no shift — align.json withholds a constant for this engine: spoke about only 7 of 11 notes on sample A
+  truth     11 notes -> correct 6 | wrong 5 | missing 0   (6+5+0 = 11)
+  outputs   7 notes -> used 5 | spurious 2 | glide 0 | join pieces 0 | dangling 0   (5+2+0+0+0 = 7)
+  merged    4 output(s) each cover 2+ truth notes, 9 note(s) merged | 9+2 = 11   (a second axis, not a bucket)
+            2 truth note(s) answered by an output also counted spurious
+    truth 60 @0s -> 60  ok  [merged]
+    truth 62 @0.6s -> 60  wrong 60 (-2 st)  [merged]
+    truth 64 @1.2s -> 64  ok
+    truth 67 @1.8s -> 67  ok
+    truth 69 @2.4s -> 69  ok  [merged]
+    truth 67 @3s -> 69  wrong 69 (+2 st)  [merged]
+    truth 64 @3.6s -> 64  ok  [merged]
+    truth 62 @4.2s -> 64  wrong 64 (+2 st)  [merged]
+    truth 60 @4.8s -> 64  wrong 64 (+4 st)  [merged]
+    truth 64 @6s -> 64  ok  [merged]
+    truth 65 @6.15s -> 64  wrong 64 (-1 st)  [merged]
+    glide: 
+    dur out   {"<0.2s":0,"0.2-0.5s":0,"0.5-1.0s":4,">1.0s":3}
+    dur truth {"<0.2s":2,"0.2-0.5s":0,"0.5-1.0s":8,">1.0s":1}
+aubio-stderr   identical to results/aubio-stderr.txt
+aubio-sweep    identical to results/aubio-sweep.tsv
+aubio-out      identical to results/out-aubio.json
+score-aubio    identical to results/score-aubio.json
+
+== sample C, scored by the same ruler ==
+  
+  == localmidi (build-c/out-localmidi-s2.json) ==
+  align     -13 ms removed from every onset (align.json, reproduced on two samples)
+  truth     13 notes -> correct 11 | wrong 2 | missing 0   (11+2+0 = 13)
+  outputs   15 notes -> used 13 | spurious 0 | glide 2 | join pieces 0 | dangling 0   (13+0+2+0+0 = 15)
+  merged    0 output(s) each cover 2+ truth notes, 0 note(s) merged | 0+13 = 13   (a second axis, not a bucket)
+    truth 57 @0s -> 57  ok
+    truth 59 @0.68s -> 59  ok
+    truth 61 @1.36s -> 61  ok
+    truth 64 @2.02s -> 64  ok
+    truth 62 @2.96s -> 63  wrong 63 (+1 st)
+    truth 60 @3.61s -> 60  ok
+    truth 67 @4.46s -> 68  wrong 68 (+1 st)
+    truth 65 @5.3s -> 65  ok
+    truth 63 @6.01s -> 63  ok
+    truth 69 @6.76s -> 69  ok
+    truth 66 @7.66s -> 66  ok
+    truth 58 @8.5s -> 58  ok
+    truth 56 @9.16s -> 56  ok
+    glide: 69,67
+    dur out   {"<0.2s":1,"0.2-0.5s":1,"0.5-1.0s":13,">1.0s":0}
+    dur truth {"<0.2s":0,"0.2-0.5s":0,"0.5-1.0s":13,">1.0s":0}
+c-localmidi    identical to results/c/out-localmidi-s2.json
+c-score-loc    identical to results/c/score-localmidi.json
+  
+  == pyin (build-c/out-pyin.json) ==
+  align     no shift — align.json withholds a constant for this engine: does not reproduce: 0 ms on sample A, -11 ms on sample C — a spread of 11 ms against a 10 ms bar
+  truth     13 notes -> correct 13 | wrong 0 | missing 0   (13+0+0 = 13)
+  outputs   16 notes -> used 13 | spurious 0 | glide 3 | join pieces 0 | dangling 0   (13+0+3+0+0 = 16)
+  merged    0 output(s) each cover 2+ truth notes, 0 note(s) merged | 0+13 = 13   (a second axis, not a bucket)
+    truth 57 @0s -> 57  ok
+    truth 59 @0.68s -> 59  ok
+    truth 61 @1.36s -> 61  ok
+    truth 64 @2.02s -> 64  ok
+    truth 62 @2.96s -> 62  ok
+    truth 60 @3.61s -> 60  ok
+    truth 67 @4.46s -> 67  ok
+    truth 65 @5.3s -> 65  ok
+    truth 63 @6.01s -> 63  ok
+    truth 69 @6.76s -> 69  ok
+    truth 66 @7.66s -> 66  ok
+    truth 58 @8.5s -> 58  ok
+    truth 56 @9.16s -> 56  ok
+    glide: 69,68,67
+    dur out   {"<0.2s":3,"0.2-0.5s":0,"0.5-1.0s":13,">1.0s":0}
+    dur truth {"<0.2s":0,"0.2-0.5s":0,"0.5-1.0s":13,">1.0s":0}
+c-pyin         identical to results/c/out-pyin.json
+c-pyin-frames  identical to results/c/pyin-frames.json
+c-score-pyin   identical to results/c/score-pyin.json
+  
+  == aubio (build-c/out-aubio.json) ==
+  align     no shift — align.json withholds a constant for this engine: spoke about only 7 of 11 notes on sample A
+  truth     13 notes -> correct 9 | wrong 4 | missing 0   (9+4+0 = 13)
+  outputs   10 notes -> used 9 | spurious 1 | glide 0 | join pieces 0 | dangling 0   (9+1+0+0+0 = 10)
+  merged    3 output(s) each cover 2+ truth notes, 7 note(s) merged | 7+6 = 13   (a second axis, not a bucket)
+    truth 57 @0s -> 57  ok  [merged]
+    truth 59 @0.68s -> 57  wrong 57 (-2 st)  [merged]
+    truth 61 @1.36s -> 61  ok
+    truth 64 @2.02s -> 64  ok
+    truth 62 @2.96s -> 62  ok  [merged]
+    truth 60 @3.61s -> 62  wrong 62 (+2 st)  [merged]
+    truth 67 @4.46s -> 67  ok
+    truth 65 @5.3s -> 65  ok
+    truth 63 @6.01s -> 63  ok
+    truth 69 @6.76s -> 69  ok
+    truth 66 @7.66s -> 66  ok  [merged]
+    truth 58 @8.5s -> 66  wrong 66 (+8 st)  [merged]
+    truth 56 @9.16s -> 66  wrong 66 (+10 st)  [merged]
+    glide: 
+    dur out   {"<0.2s":0,"0.2-0.5s":1,"0.5-1.0s":6,">1.0s":3}
+    dur truth {"<0.2s":0,"0.2-0.5s":0,"0.5-1.0s":13,">1.0s":0}
+c-aubio-stder  identical to results/c/aubio-stderr.txt
+c-aubio-sweep  identical to results/c/aubio-sweep.tsv
+c-aubio-out    identical to results/c/out-aubio.json
+c-score-aubio  identical to results/c/score-aubio.json
+  lattice   every onset = k * hop; smallest hop that explains each file:
+    localmidi  A  13 notes   256 samples =   5.8 ms  (max residual 0.48 ms)
+    pyin       A  14 notes   512 samples = 11.61 ms  (max residual 0.48 ms)
+    aubio      A   7 notes   256 samples =   5.8 ms  (max residual 0.49 ms)
+    localmidi  C  15 notes   256 samples =   5.8 ms  (max residual 0.46 ms)
+    pyin       C  16 notes   512 samples = 11.61 ms  (max residual 0.47 ms)
+    aubio      C  10 notes   256 samples =   5.8 ms  (max residual 0.42 ms)
+    aubio      median   57 ms on A,   53 ms on C -> 4 ms = 0.69 hop of 5.8 ms
+    localmidi  median  -11 ms on A,  -13 ms on C -> 2 ms = 0.34 hop of 5.8 ms
+    pyin       median    0 ms on A,  -11 ms on C -> 11 ms = 0.95 hop of 11.61 ms
+c-onset-grid   identical to results/c/onset-grid.json
+  
+  == localmidi (build-b/out-localmidi-s2.json) ==
+  align     -13 ms removed from every onset (align.json, reproduced on two samples)
+  truth     30 notes -> correct 14 | wrong 16 | missing 0   (14+16+0 = 30)
+  outputs   22 notes -> used 22 | spurious 0 | glide 0 | join pieces 0 | dangling 0   (22+0+0+0+0 = 22)
+  merged    7 output(s) each cover 2+ truth notes, 15 note(s) merged | 15+15 = 30   (a second axis, not a bucket)
+  joins     onset raw +29 ms -> aligned +42 ms  (12/30 notes paired, same rule as measure-onset.js) | 22 outputs answer 30 notes
+  pitch err steady 100 cents (n=25) | vibrato 100 cents (n=5) — reported apart, never averaged together
+    truth 64 @0s -> 64  ok
+    truth 69 @1.4s -> 68  wrong 68 (-1 st)  [merged]
+    truth 67 @2.9s -> 68  wrong 68 (+1 st)  [merged]
+    truth 65 @3.65s -> 66  wrong 66 (+1 st)
+    truth 64 @4.4s -> 64  ok
+    truth 72 @5.5s -> 72  ok  [merged]
+    truth 71 @7.1s -> 72  wrong 72 (+1 st)  [merged]
+    truth 69 @7.75s -> 70  wrong 70 (+1 st)
+    truth 64 @9.85s -> 64  ok  [merged]
+    truth 64 @10.4s -> 64  ok  [merged]
+    truth 65 @10.95s -> 64  wrong 64 (-1 st)  [merged]
+    truth 67 @11.55s -> 66  wrong 66 (-1 st)
+    truth 69 @12.15s -> 68  wrong 68 (-1 st)  [merged]
+    truth 67 @13.45s -> 68  wrong 68 (+1 st)  [merged]
+    truth 65 @13.63s -> 66  wrong 66 (+1 st)
+    truth 64 @13.81s -> 64  ok
+    truth 62 @13.99s -> 62  ok
+    truth 60 @14.19s -> 60  ok
+    truth 64 @15.09s -> 64  ok
+    truth 69 @15.49s -> 68  wrong 68 (-1 st)
+    truth 81 @16.14s -> 80  wrong 80 (-1 st)  [merged]
+    truth 79 @17.24s -> 80  wrong 80 (+1 st)  [merged]
+    truth 76 @17.94s -> 76  ok
+    truth 72 @18.69s -> 72  ok
+    truth 77 @20.14s -> 76  wrong 76 (-1 st)  [merged]
+    truth 76 @20.74s -> 76  ok  [merged]
+    truth 74 @21.34s -> 74  ok
+    truth 72 @21.94s -> 72  ok  [merged]
+    truth 71 @23.44s -> 72  wrong 72 (+1 st)  [merged]
+    truth 69 @23.99s -> 70  wrong 70 (+1 st)
+    glide: 
+    dur out   {"<0.2s":2,"0.2-0.5s":2,"0.5-1.0s":6,">1.0s":12}
+    dur truth {"<0.2s":4,"0.2-0.5s":1,"0.5-1.0s":15,">1.0s":10}
+b-localmidi    identical to results/b/out-localmidi-s2.json
+b-score-loc    identical to results/b/score-localmidi.json
+  
+  == pyin (build-b/out-pyin.json) ==
+  align     no shift — align.json withholds a constant for this engine: does not reproduce: 0 ms on sample A, -11 ms on sample C — a spread of 11 ms against a 10 ms bar
+  truth     30 notes -> correct 30 | wrong 0 | missing 0   (30+0+0 = 30)
+  outputs   29 notes -> used 29 | spurious 0 | glide 0 | join pieces 0 | dangling 0   (29+0+0+0+0 = 29)
+  merged    1 output(s) each cover 2+ truth notes, 2 note(s) merged | 2+28 = 30   (a second axis, not a bucket)
+  joins     onset raw +48 ms (not shifted: withheld)  (29/30 notes paired, same rule as measure-onset.js) | 29 outputs answer 30 notes
+  pitch err steady 0 cents (n=25) | vibrato 0 cents (n=5) — reported apart, never averaged together
+    truth 64 @0s -> 64  ok
+    truth 69 @1.4s -> 69  ok
+    truth 67 @2.9s -> 67  ok
+    truth 65 @3.65s -> 65  ok
+    truth 64 @4.4s -> 64  ok
+    truth 72 @5.5s -> 72  ok
+    truth 71 @7.1s -> 71  ok
+    truth 69 @7.75s -> 69  ok
+    truth 64 @9.85s -> 64  ok  [merged]
+    truth 64 @10.4s -> 64  ok  [merged]
+    truth 65 @10.95s -> 65  ok
+    truth 67 @11.55s -> 67  ok
+    truth 69 @12.15s -> 69  ok
+    truth 67 @13.45s -> 67  ok
+    truth 65 @13.63s -> 65  ok
+    truth 64 @13.81s -> 64  ok
+    truth 62 @13.99s -> 62  ok
+    truth 60 @14.19s -> 60  ok
+    truth 64 @15.09s -> 64  ok
+    truth 69 @15.49s -> 69  ok
+    truth 81 @16.14s -> 81  ok
+    truth 79 @17.24s -> 79  ok
+    truth 76 @17.94s -> 76  ok
+    truth 72 @18.69s -> 72  ok
+    truth 77 @20.14s -> 77  ok
+    truth 76 @20.74s -> 76  ok
+    truth 74 @21.34s -> 74  ok
+    truth 72 @21.94s -> 72  ok
+    truth 71 @23.44s -> 71  ok
+    truth 69 @23.99s -> 69  ok
+    glide: 
+    dur out   {"<0.2s":4,"0.2-0.5s":1,"0.5-1.0s":14,">1.0s":10}
+    dur truth {"<0.2s":4,"0.2-0.5s":1,"0.5-1.0s":15,">1.0s":10}
+b-pyin         identical to results/b/out-pyin.json
+b-score-pyin   identical to results/b/score-pyin.json
+  grid points: 2716 | midi match: 0.9801
+  body  median |err| 0.0 cents  p95 7.2  max 14.0
+  join  points 153 median signed -6.9 cents
+b-synth-check  identical to results/b/synth-check.json
+  
+  == aubio (build-b/out-aubio.json) ==
+  align     no shift — align.json withholds a constant for this engine: spoke about only 7 of 11 notes on sample A
+  truth     30 notes -> correct 9 | wrong 21 | missing 0   (9+21+0 = 30)
+  outputs   30 notes -> used 30 | spurious 0 | glide 0 | join pieces 0 | dangling 0   (30+0+0+0+0 = 30)
+  merged    0 output(s) each cover 2+ truth notes, 0 note(s) merged | 0+30 = 30   (a second axis, not a bucket)
+  joins     onset raw +59 ms (not shifted: withheld)  (9/30 notes paired, same rule as measure-onset.js) | 30 outputs answer 30 notes
+  pitch err steady 100 cents (n=25) | vibrato 100 cents (n=5) — reported apart, never averaged together
+    truth 64 @0s -> 64  ok
+    truth 69 @1.4s -> 65  wrong 65 (-4 st)
+    truth 67 @2.9s -> 68  wrong 68 (+1 st)
+    truth 65 @3.65s -> 66  wrong 66 (+1 st)
+    truth 64 @4.4s -> 64  ok
+    truth 72 @5.5s -> 65  wrong 65 (-7 st)
+    truth 71 @7.1s -> 71  ok
+    truth 69 @7.75s -> 70  wrong 70 (+1 st)
+    truth 64 @9.85s -> 64  ok
+    truth 64 @10.4s -> 64  ok
+    truth 65 @10.95s -> 64  wrong 64 (-1 st)
+    truth 67 @11.55s -> 66  wrong 66 (-1 st)
+    truth 69 @12.15s -> 68  wrong 68 (-1 st)
+    truth 67 @13.45s -> 68  wrong 68 (+1 st)
+    truth 65 @13.63s -> 66  wrong 66 (+1 st)
+    truth 64 @13.81s -> 64  ok
+    truth 62 @13.99s -> 63  wrong 63 (+1 st)
+    truth 60 @14.19s -> 61  wrong 61 (+1 st)
+    truth 64 @15.09s -> 64  ok
+    truth 69 @15.49s -> 65  wrong 65 (-4 st)
+    truth 81 @16.14s -> 70  wrong 70 (-11 st)
+    truth 79 @17.24s -> 80  wrong 80 (+1 st)
+    truth 76 @17.94s -> 78  wrong 78 (+2 st)
+    truth 72 @18.69s -> 75  wrong 75 (+3 st)
+    truth 77 @20.14s -> 73  wrong 73 (-4 st)
+    truth 76 @20.74s -> 76  ok
+    truth 74 @21.34s -> 75  wrong 75 (+1 st)
+    truth 72 @21.94s -> 73  wrong 73 (+1 st)
+    truth 71 @23.44s -> 71  ok
+    truth 69 @23.99s -> 70  wrong 70 (+1 st)
+    glide: 
+    dur out   {"<0.2s":4,"0.2-0.5s":1,"0.5-1.0s":15,">1.0s":10}
+    dur truth {"<0.2s":4,"0.2-0.5s":1,"0.5-1.0s":15,">1.0s":10}
+b-aubio-stder  identical to results/b/aubio-stderr.txt
+b-aubio-sweep  identical to results/b/aubio-sweep.tsv
+b-aubio-out    identical to results/b/out-aubio.json
+b-score-aubio  identical to results/b/score-aubio.json
+  probe: 26/26 isolated bodies read correctly (4 too short to ask)
+b-steady-probe identical to results/b/steady-probe.json
+  
+  == localmidi (build-b90/out-localmidi-s2.json) ==
+  align     -13 ms removed from every onset (align.json, reproduced on two samples)
+  truth     30 notes -> correct 14 | wrong 16 | missing 0   (14+16+0 = 30)
+  outputs   22 notes -> used 22 | spurious 0 | glide 0 | join pieces 0 | dangling 0   (22+0+0+0+0 = 22)
+  merged    7 output(s) each cover 2+ truth notes, 15 note(s) merged | 15+15 = 30   (a second axis, not a bucket)
+  joins     onset raw +64 ms -> aligned +77 ms  (12/30 notes paired, same rule as measure-onset.js) | 22 outputs answer 30 notes
+  pitch err steady 100 cents (n=25) | vibrato 100 cents (n=5) — reported apart, never averaged together
+    truth 64 @0s -> 64  ok
+    truth 69 @1.4s -> 68  wrong 68 (-1 st)  [merged]
+    truth 67 @2.9s -> 68  wrong 68 (+1 st)  [merged]
+    truth 65 @3.65s -> 66  wrong 66 (+1 st)
+    truth 64 @4.4s -> 64  ok
+    truth 72 @5.5s -> 72  ok  [merged]
+    truth 71 @7.1s -> 72  wrong 72 (+1 st)  [merged]
+    truth 69 @7.75s -> 70  wrong 70 (+1 st)
+    truth 64 @9.85s -> 64  ok  [merged]
+    truth 64 @10.4s -> 64  ok  [merged]
+    truth 65 @10.95s -> 64  wrong 64 (-1 st)  [merged]
+    truth 67 @11.55s -> 66  wrong 66 (-1 st)
+    truth 69 @12.15s -> 68  wrong 68 (-1 st)  [merged]
+    truth 67 @13.45s -> 68  wrong 68 (+1 st)  [merged]
+    truth 65 @13.63s -> 66  wrong 66 (+1 st)
+    truth 64 @13.81s -> 64  ok
+    truth 62 @13.99s -> 62  ok
+    truth 60 @14.19s -> 60  ok
+    truth 64 @15.09s -> 64  ok
+    truth 69 @15.49s -> 68  wrong 68 (-1 st)
+    truth 81 @16.14s -> 80  wrong 80 (-1 st)  [merged]
+    truth 79 @17.24s -> 80  wrong 80 (+1 st)  [merged]
+    truth 76 @17.94s -> 76  ok
+    truth 72 @18.69s -> 72  ok
+    truth 77 @20.14s -> 76  wrong 76 (-1 st)  [merged]
+    truth 76 @20.74s -> 76  ok  [merged]
+    truth 74 @21.34s -> 74  ok
+    truth 72 @21.94s -> 72  ok  [merged]
+    truth 71 @23.44s -> 72  wrong 72 (+1 st)  [merged]
+    truth 69 @23.99s -> 70  wrong 70 (+1 st)
+    glide: 
+    dur out   {"<0.2s":1,"0.2-0.5s":3,"0.5-1.0s":6,">1.0s":12}
+    dur truth {"<0.2s":4,"0.2-0.5s":1,"0.5-1.0s":15,">1.0s":10}
+b90-localmidi  identical to results/b90/out-localmidi-s2.json
+b90-score-loc  identical to results/b90/score-localmidi.json
+  
+  == pyin (build-b90/out-pyin.json) ==
+  align     no shift — align.json withholds a constant for this engine: does not reproduce: 0 ms on sample A, -11 ms on sample C — a spread of 11 ms against a 10 ms bar
+  truth     30 notes -> correct 30 | wrong 0 | missing 0   (30+0+0 = 30)
+  outputs   29 notes -> used 29 | spurious 0 | glide 0 | join pieces 0 | dangling 0   (29+0+0+0+0 = 29)
+  merged    1 output(s) each cover 2+ truth notes, 2 note(s) merged | 2+28 = 30   (a second axis, not a bucket)
+  joins     onset raw +82 ms (not shifted: withheld)  (29/30 notes paired, same rule as measure-onset.js) | 29 outputs answer 30 notes
+  pitch err steady 0 cents (n=25) | vibrato 0 cents (n=5) — reported apart, never averaged together
+    truth 64 @0s -> 64  ok
+    truth 69 @1.4s -> 69  ok
+    truth 67 @2.9s -> 67  ok
+    truth 65 @3.65s -> 65  ok
+    truth 64 @4.4s -> 64  ok
+    truth 72 @5.5s -> 72  ok
+    truth 71 @7.1s -> 71  ok
+    truth 69 @7.75s -> 69  ok
+    truth 64 @9.85s -> 64  ok  [merged]
+    truth 64 @10.4s -> 64  ok  [merged]
+    truth 65 @10.95s -> 65  ok
+    truth 67 @11.55s -> 67  ok
+    truth 69 @12.15s -> 69  ok
+    truth 67 @13.45s -> 67  ok
+    truth 65 @13.63s -> 65  ok
+    truth 64 @13.81s -> 64  ok
+    truth 62 @13.99s -> 62  ok
+    truth 60 @14.19s -> 60  ok
+    truth 64 @15.09s -> 64  ok
+    truth 69 @15.49s -> 69  ok
+    truth 81 @16.14s -> 81  ok
+    truth 79 @17.24s -> 79  ok
+    truth 76 @17.94s -> 76  ok
+    truth 72 @18.69s -> 72  ok
+    truth 77 @20.14s -> 77  ok
+    truth 76 @20.74s -> 76  ok
+    truth 74 @21.34s -> 74  ok
+    truth 72 @21.94s -> 72  ok
+    truth 71 @23.44s -> 71  ok
+    truth 69 @23.99s -> 69  ok
+    glide: 
+    dur out   {"<0.2s":4,"0.2-0.5s":1,"0.5-1.0s":13,">1.0s":11}
+    dur truth {"<0.2s":4,"0.2-0.5s":1,"0.5-1.0s":15,">1.0s":10}
+b90-pyin       identical to results/b90/out-pyin.json
+b90-score-pyin identical to results/b90/score-pyin.json
+  
+  == aubio (build-b90/out-aubio.json) ==
+  align     no shift — align.json withholds a constant for this engine: spoke about only 7 of 11 notes on sample A
+  truth     30 notes -> correct 4 | wrong 26 | missing 0   (4+26+0 = 30)
+  outputs   31 notes -> used 30 | spurious 0 | glide 0 | join pieces 1 | dangling 0   (30+0+0+1+0 = 31)
+  merged    0 output(s) each cover 2+ truth notes, 0 note(s) merged | 0+30 = 30   (a second axis, not a bucket)
+  joins     onset raw +61 ms (not shifted: withheld)  (4/30 notes paired, same rule as measure-onset.js) | 30 outputs answer 30 notes
+  pitch err steady 200 cents (n=25) | vibrato 200 cents (n=5) — reported apart, never averaged together
+    truth 64 @0s -> 64  ok
+    truth 69 @1.4s -> 65  wrong 65 (-4 st)
+    truth 67 @2.9s -> 69  wrong 69 (+2 st)
+    truth 65 @3.65s -> 67  wrong 67 (+2 st)
+    truth 64 @4.4s -> 65  wrong 65 (+1 st)
+    truth 72 @5.5s -> 65  wrong 65 (-7 st)
+    truth 71 @7.1s -> 72  wrong 72 (+1 st)
+    truth 69 @7.75s -> 71  wrong 71 (+2 st)
+    truth 64 @9.85s -> 64  ok
+    truth 64 @10.4s -> 64  ok
+    truth 65 @10.95s -> 64  wrong 64 (-1 st)
+    truth 67 @11.55s -> 65  wrong 65 (-2 st)
+    truth 69 @12.15s -> 67  wrong 67 (-2 st)
+    truth 67 @13.45s -> 69  wrong 69 (+2 st)
+    truth 65 @13.63s -> 67  wrong 67 (+2 st)
+    truth 64 @13.81s -> 65  wrong 65 (+1 st)
+    truth 62 @13.99s -> 64  wrong 64 (+2 st)
+    truth 60 @14.19s -> 62  wrong 62 (+2 st)
+    truth 64 @15.09s -> 64  ok
+    truth 69 @15.49s -> 65  wrong 65 (-4 st)
+    truth 81 @16.14s -> 80  wrong 80 (-1 st)
+    truth 79 @17.24s -> 81  wrong 81 (+2 st)
+    truth 76 @17.94s -> 79  wrong 79 (+3 st)
+    truth 72 @18.69s -> 75  wrong 75 (+3 st)
+    truth 77 @20.14s -> 73  wrong 73 (-4 st)
+    truth 76 @20.74s -> 77  wrong 77 (+1 st)
+    truth 74 @21.34s -> 76  wrong 76 (+2 st)
+    truth 72 @21.94s -> 74  wrong 74 (+2 st)
+    truth 71 @23.44s -> 72  wrong 72 (+1 st)
+    truth 69 @23.99s -> 71  wrong 71 (+2 st)
+    glide: 
+    dur out   {"<0.2s":5,"0.2-0.5s":1,"0.5-1.0s":15,">1.0s":10}
+    dur truth {"<0.2s":4,"0.2-0.5s":1,"0.5-1.0s":15,">1.0s":10}
+b90-aubio-out  identical to results/b90/out-aubio.json
+b90-score-aubio identical to results/b90/score-aubio.json
+b90-onset      identical to results/b90/onset.json
+
+== frames (the 23 ms window) ==
+  frameSize 1024 hop 256 -> 5.8 ms hop, 23.2 ms window
+  5.904s lag=167 264.1Hz midi=60
+  5.909s lag=167 264.1Hz midi=60
+  5.915s lag=167 264.1Hz midi=60
+  5.921s lag=168 262.5Hz midi=60
+  5.927s lag=167 264.1Hz midi=60
+  5.933s lag=167 264.1Hz midi=60
+  5.939s lag=167 264.1Hz midi=60
+  5.944s lag=168 262.5Hz midi=60
+  5.95s lag=167 264.1Hz midi=60
+  5.956s lag=168 262.5Hz midi=60
+  5.962s lag=167 264.1Hz midi=60
+  5.968s lag=169 260.9Hz midi=60
+  5.973s lag=167 264.1Hz midi=60
+  5.979s lag=167 264.1Hz midi=60
+  5.985s lag=142 310.6Hz midi=63
+  5.991s lag=134 329.1Hz midi=64
+  5.997s lag=134 329.1Hz midi=64
+  6.002s lag=134 329.1Hz midi=64
+  6.008s lag=134 329.1Hz midi=64
+  6.014s lag=134 329.1Hz midi=64
+  6.02s lag=134 329.1Hz midi=64
+  6.026s lag=134 329.1Hz midi=64
+  6.031s lag=134 329.1Hz midi=64
+  6.037s lag=134 329.1Hz midi=64
+  6.043s lag=134 329.1Hz midi=64
+  6.049s lag=134 329.1Hz midi=64
+  6.055s lag=134 329.1Hz midi=64
+  6.06s lag=134 329.1Hz midi=64
+  6.066s lag=134 329.1Hz midi=64
+  6.072s lag=134 329.1Hz midi=64
+  6.078s lag=134 329.1Hz midi=64
+  6.084s lag=134 329.1Hz midi=64
+  6.089s lag=134 329.1Hz midi=64
+  6.095s lag=134 329.1Hz midi=64
+  6.101s lag=133 331.6Hz midi=64
+  6.107s lag=133 331.6Hz midi=64
+  6.113s lag=132 334.1Hz midi=64
+  6.118s lag=134 329.1Hz midi=64
+  6.124s lag=134 329.1Hz midi=64
+  6.13s lag=134 329.1Hz midi=64
+  6.136s lag=127 347.2Hz midi=65
+  6.142s lag=127 347.2Hz midi=65
+  6.147s lag=127 347.2Hz midi=65
+  6.153s lag=126 350Hz midi=65
+  6.159s lag=126 350Hz midi=65
+  6.165s lag=126 350Hz midi=65
+  6.171s lag=126 350Hz midi=65
+  6.177s lag=126 350Hz midi=65
+  6.182s lag=126 350Hz midi=65
+  6.188s lag=126 350Hz midi=65
+  6.194s lag=126 350Hz midi=65
+  6.2s lag=126 350Hz midi=65
+  6.206s lag=126 350Hz midi=65
+  6.211s lag=126 350Hz midi=65
+  6.217s lag=126 350Hz midi=65
+  6.223s lag=126 350Hz midi=65
+  6.229s lag=126 350Hz midi=65
+  6.235s lag=126 350Hz midi=65
+  6.24s lag=126 350Hz midi=65
+  6.246s lag=126 350Hz midi=65
+  6.252s lag=126 350Hz midi=65
+  6.258s lag=126 350Hz midi=65
+  6.264s lag=126 350Hz midi=65
+  6.269s lag=126 350Hz midi=65
+  6.275s lag=127 347.2Hz midi=65
+  6.281s lag=126 350Hz midi=65
+  6.287s lag=126 350Hz midi=65
+  6.293s lag=125 352.8Hz midi=65
+  6.298s lag=490 90Hz midi=42
+  6.304s lag=441 100Hz midi=43
+  6.31s lag=144 306.3Hz midi=63
+  6.316s lag=144 306.3Hz midi=63
+  6.322s lag=91 484.6Hz midi=71
+  6.327s lag=384 114.8Hz midi=46
+  6.333s lag=141 312.8Hz midi=63
+  6.339s lag=204 216.2Hz midi=57
+  6.345s lag=204 216.2Hz midi=57
+  6.351s lag=266 165.8Hz midi=52
+  6.356s lag=375 117.6Hz midi=46
+  6.362s lag=75 588Hz midi=74
+  6.368s lag=75 588Hz midi=74
+  6.374s lag=75 588Hz midi=74
+  6.38s lag=87 506.9Hz midi=71
+  6.385s lag=87 506.9Hz midi=71
+  6.391s lag=87 506.9Hz midi=71
+  6.397s lag=87 506.9Hz midi=71
+  6.403s lag=167 264.1Hz midi=60
+  6.409s lag=184 239.7Hz midi=58
+  6.415s lag=196 225Hz midi=57
+  6.42s lag=196 225Hz midi=57
+  6.426s lag=223 197.8Hz midi=55
+  6.432s lag=41 1075.6Hz midi=84
+  6.438s lag=175 252Hz midi=59
+  6.444s lag=230 191.7Hz midi=55
+  6.449s lag=253 174.3Hz midi=53
+  boundary frame: 5.985 lag 142 310.6 Hz -> 63
+frames         identical to results/frames.json
+
+---- 38 identical, 0 differing, 0 engine(s) skipped ----

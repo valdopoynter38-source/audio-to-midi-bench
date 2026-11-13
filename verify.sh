@@ -106,8 +106,10 @@ echo "== sample B at a fixed 90 ms: the pre-change instrument =="
 # engines speak about the whole file.
 mkdir -p build-b90
 node run-localmidi.js melody2-90.wav 2 build-b90 | sed 's/^/  /'
-if [ "$HAVE_PYIN" = 1 ]; then python run-pyin.py melody2-90.wav truth2-90.json build-b90 | sed 's/^/  /'; fi
-if [ "$HAVE_AUBIO" = 1 ]; then node run-aubio.js melody2-90.wav build-b90 2>/dev/null | sed 's/^/  /'; fi
+if [ "$HAVE_PYIN" = 1 ]; then python run-pyin.py melody2-90.wav truth2-90.json build-b90 | sed 's/^/  /'
+else say "b90-pYIN" "skipped — librosa not importable through librosa_shim"; skipped=$((skipped+1)); fi
+if [ "$HAVE_AUBIO" = 1 ]; then node run-aubio.js melody2-90.wav build-b90 2>/dev/null | sed 's/^/  /'
+else say "b90-aubio" "skipped — aubionotes not found"; skipped=$((skipped+1)); fi
 
 echo
 echo "== the ruler's time axis: two samples of one condition =="

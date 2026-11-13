@@ -1,6 +1,6 @@
 // How late does each engine report the notes it does report?
 //
-//   node measure-onset.js <truth.json> <out.json> [out.json ...] [--json] [--no-constants]
+//   node measure-onset.js <truth.json> <out.json> [out.json ...] [--json]
 //
 // The number this prints is a property of the tool only if it survives a change
 // of sample. If it moves when the notes, the gaps or the joins change, it is the
