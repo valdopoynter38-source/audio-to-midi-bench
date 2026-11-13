@@ -7,7 +7,7 @@ three pitch-to-MIDI engines. Every number below is reproduced by one command:
 ./verify.sh
 ```
 
-67 byte-comparisons across the samples; a full run takes about an hour and a
+66 byte-comparisons across the samples; a full run takes about an hour and a
 quarter on a laptop, most of it pYIN (eleven runs at roughly five minutes each)
 and the four 72-combination aubio sweeps. If your run prints `0 differing`, you
 have the same tables we published.
